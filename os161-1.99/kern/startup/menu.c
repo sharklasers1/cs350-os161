@@ -179,6 +179,21 @@ cmd_prog(int nargs, char **args)
 
 	return common_prog(nargs, args);
 }
+/*
+ * Command for enabled DB_THREAD Debug messages.
+ */
+
+static
+int
+cmd_dth(int nargs, char **args)
+{
+	(void)nargs;
+	(void)args;
+
+	dbflags = DB_THREADS;
+
+	return 0;
+}
 
 /*
  * Command for starting the system shell.
@@ -426,6 +441,7 @@ showmenu(const char *name, const char *x[])
 }
 
 static const char *opsmenu[] = {
+	"[dth]     Enable Thread Debug       ",
 	"[s]       Shell                     ",
 	"[p]       Other program             ",
 	"[mount]   Mount a filesystem        ",
@@ -535,6 +551,7 @@ static struct {
 	{ "?t",		cmd_testmenu },
 
 	/* operations */
+	{ "dth",		cmd_dth },
 	{ "s",		cmd_shell },
 	{ "p",		cmd_prog },
 	{ "mount",	cmd_mount },
@@ -669,7 +686,8 @@ menu_execute(char *line, int isargs)
 			kprintf("OS/161 kernel: %s\n", command);
 		}
 
-		result = cmd_dispatch(command);
+		// Commands should return 0 otherwise the menu command failed
+		result = cmd_dispatch(command); 
 		if (result) {
 			kprintf("Menu command failed: %s\n", strerror(result));
 			if (isargs) {

@@ -191,9 +191,8 @@ lock_acquire(struct lock *lock)
 void
 lock_release(struct lock *lock)
 {
-        KASSERT(lock != NULL);
-        KASSERT(curthread != NULL);
-        KASSERT(curthread == lock->lock_thread);
+        // Only the thread that has a acquired the lock can release it when it has completed its critical section
+        KASSERT(lock_do_i_hold(lock));
         lock->lock_thread = NULL;
         spinlock_release(&lock->lock_spinlock);
 }
@@ -232,7 +231,12 @@ cv_create(const char *name)
                 return NULL;
         }
         
-        // add stuff here as needed
+        cv->cv_wchan = wchan_create(cv->cv_name);
+        if (cv->cv_wchan == NULL) {
+                kfree(cv->cv_name);
+                kfree(cv);
+                return NULL;
+        }
         
         return cv;
 }
@@ -242,8 +246,8 @@ cv_destroy(struct cv *cv)
 {
         KASSERT(cv != NULL);
 
-        // add stuff here as needed
-        
+        wchan_destroy(cv->cv_wchan);
+    
         kfree(cv->cv_name);
         kfree(cv);
 }
@@ -251,23 +255,39 @@ cv_destroy(struct cv *cv)
 void
 cv_wait(struct cv *cv, struct lock *lock)
 {
-        // Write this
-        (void)cv;    // suppress warning until code gets written
-        (void)lock;  // suppress warning until code gets written
+        KASSERT(cv != NULL);
+        KASSERT(lock != NULL);
+
+        // CV's are only intended to be used from within the critical section protected by the lock
+        // If you hold the lock, then you're in a critical section protected by it
+        KASSERT(lock_do_i_hold(lock));
+
+        // We must lock the wait channel so that another thread with the lock cannot wake us before we're asleep
+        // This atomically puts the thread to sleep, noting that wchan_sleep will unlock the wait channel
+        wchan_lock(cv->cv_wchan);
+        lock_release(lock);
+        wchan_sleep(cv->cv_wchan);
+        lock_acquire(lock);
 }
 
 void
 cv_signal(struct cv *cv, struct lock *lock)
 {
-        // Write this
-	(void)cv;    // suppress warning until code gets written
-	(void)lock;  // suppress warning until code gets written
+        KASSERT(cv != NULL);
+
+        // CV's are only intended to be used from within the critical section protected by the lock
+        KASSERT(lock_do_i_hold(lock));
+
+        wchan_wakeone(cv->cv_wchan);
 }
 
 void
 cv_broadcast(struct cv *cv, struct lock *lock)
 {
-	// Write this
-	(void)cv;    // suppress warning until code gets written
-	(void)lock;  // suppress warning until code gets written
+	KASSERT(cv != NULL);
+
+    // CV's are only intended to be used from within the critical section protected by the lock
+    KASSERT(lock_do_i_hold(lock));
+
+    wchan_wakeall(cv->cv_wchan);
 }
