@@ -163,7 +163,17 @@ lock_create(const char *name)
                 return NULL;
         }
 
-        spinlock_init(&lock->lock_spinlock);
+
+        lock->lk_wchan = wchan_create(lock->lk_name);
+        if (lock->lk_wchan == NULL) {
+                kfree(lock->lk_name);
+                kfree(lock);
+                return NULL;
+        }
+
+        spinlock_init(&lock->lk_guard);
+
+        lock->lk_flag = 0;
 
         return lock;
 }
@@ -173,8 +183,9 @@ lock_destroy(struct lock *lock)
 {
         KASSERT(lock != NULL);
 
-        spinlock_cleanup(&lock->lock_spinlock);
-        
+        spinlock_cleanup(&lock->lk_guard);
+        wchan_destroy(lock->lk_wchan);
+
         kfree(lock->lk_name);
         kfree(lock);
 }
@@ -184,17 +195,42 @@ lock_acquire(struct lock *lock)
 {
         KASSERT(lock != NULL);
         KASSERT(curthread != NULL);
-        spinlock_acquire(&lock->lock_spinlock);
-        lock->lock_thread = curthread;
+
+        while(1) {
+                // The changing of the lock itself is a critical section, use a guard to protect it
+                spinlock_acquire(&lock->lk_guard);
+
+                if (lock->lk_flag == 0) {
+                        lock->lk_thread = curthread; // set owning thread
+                        lock->lk_flag = 1; // acquire the lock
+                        spinlock_release(&lock->lk_guard);
+                        return;
+                }
+
+                else {
+                        // We must lock the wait channel so that another thread that immediately grabs the guard
+                        // cannot wake us before we're asleep. This atomically puts the thread to sleep,
+                        // noting that wchan_sleep will unlock the wait channel.
+                        wchan_lock(lock->lk_wchan);
+                        spinlock_release(&lock->lk_guard);
+                        wchan_sleep(lock->lk_wchan);
+                }
+        }
+
 }
 
 void
 lock_release(struct lock *lock)
 {
-        // Only the thread that has a acquired the lock can release it when it has completed its critical section
+        // Only the thread that has acquired the lock can release it when it has completed its critical section
         KASSERT(lock_do_i_hold(lock));
-        lock->lock_thread = NULL;
-        spinlock_release(&lock->lock_spinlock);
+
+        // Acquire the guard for atomic manipulation of the lock
+        spinlock_acquire(&lock->lk_guard);
+        lock->lk_flag = 0;
+        lock->lk_thread = NULL;
+        wchan_wakeone(lock->lk_wchan);
+        spinlock_release(&lock->lk_guard);
 }
 
 bool
@@ -203,11 +239,11 @@ lock_do_i_hold(struct lock *lock)
         KASSERT(lock != NULL);
         KASSERT(curthread != NULL);
 
-        if (lock->lock_thread == NULL) {
+        if (lock->lk_thread == NULL) {
             return false;
         }
 
-        return curthread == lock->lock_thread;
+        return curthread == lock->lk_thread;
 }
 
 ////////////////////////////////////////////////////////////
@@ -275,7 +311,8 @@ cv_signal(struct cv *cv, struct lock *lock)
 {
         KASSERT(cv != NULL);
 
-        // CV's are only intended to be used from within the critical section protected by the lock
+        // CV's are only intended to be used from within the critical section protected by the lock.
+        // If you hold the lock, then you're in a critical section protected by it
         KASSERT(lock_do_i_hold(lock));
 
         wchan_wakeone(cv->cv_wchan);
@@ -284,10 +321,10 @@ cv_signal(struct cv *cv, struct lock *lock)
 void
 cv_broadcast(struct cv *cv, struct lock *lock)
 {
-	KASSERT(cv != NULL);
+    	KASSERT(cv != NULL);
 
-    // CV's are only intended to be used from within the critical section protected by the lock
-    KASSERT(lock_do_i_hold(lock));
+        // CV's are only intended to be used from within the critical section protected by the lock.
+        KASSERT(lock_do_i_hold(lock));
 
-    wchan_wakeall(cv->cv_wchan);
+        wchan_wakeall(cv->cv_wchan);
 }
