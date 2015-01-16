@@ -229,6 +229,8 @@ lock_release(struct lock *lock)
         spinlock_acquire(&lock->lk_guard);
         lock->lk_flag = 0;
         lock->lk_thread = NULL;
+
+        // will wait for wchan to unlock before proceeding
         wchan_wakeone(lock->lk_wchan);
         spinlock_release(&lock->lk_guard);
 }
@@ -298,8 +300,9 @@ cv_wait(struct cv *cv, struct lock *lock)
         // If you hold the lock, then you're in a critical section protected by it
         KASSERT(lock_do_i_hold(lock));
 
-        // We must lock the wait channel so that another thread with the lock cannot wake us before we're asleep
-        // This atomically puts the thread to sleep, noting that wchan_sleep will unlock the wait channel
+        // We must lock the wait channel so that another thread that immediately acquires
+        // the lock cannot wake until we're asleep to prevent deadlock
+        // This puts the thread to sleep, noting that wchan_sleep will unlock the wait channel
         wchan_lock(cv->cv_wchan);
         lock_release(lock);
         wchan_sleep(cv->cv_wchan);
@@ -315,6 +318,8 @@ cv_signal(struct cv *cv, struct lock *lock)
         // If you hold the lock, then you're in a critical section protected by it
         KASSERT(lock_do_i_hold(lock));
 
+
+        // will wait for wchan to unlock before proceeding
         wchan_wakeone(cv->cv_wchan);
 }
 
