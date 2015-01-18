@@ -242,7 +242,7 @@ lock_do_i_hold(struct lock *lock)
         KASSERT(curthread != NULL);
 
         if (lock->lk_thread == NULL) {
-            return false;
+            return 0;
         }
 
         return curthread == lock->lk_thread;
@@ -294,7 +294,6 @@ void
 cv_wait(struct cv *cv, struct lock *lock)
 {
         KASSERT(cv != NULL);
-        KASSERT(lock != NULL);
 
         // CV's are only intended to be used from within the critical section protected by the lock
         // If you hold the lock, then you're in a critical section protected by it

@@ -16,11 +16,41 @@
  * declare other global variables if your solution requires them.
  */
 
-/*
- * replace this with declarations of any synchronization and other variables you need here
- */
-static struct semaphore *globalCatMouseSem;
+// ========================================
+// Locks
+// ========================================
 
+// Controls entry of species eating
+static struct lock *speciesEntryLock;
+
+// Controls entry of individual animal eating
+static struct lock *animalEntryLock;
+
+// Ensures synchronization of cat data
+static struct lock *catLock;
+
+// Ensures Synchronization of mouse data
+static struct lock *mouseLock;
+
+// ========================================
+// Condition Variables
+// ========================================
+
+// Handles occupation of bowls
+static struct cv *occupiedBowlsCV;
+
+// ========================================
+// Global Variables
+// ========================================
+
+// Keeps track of number of cats
+volatile int cats;
+
+// Keeps track of number of mice
+volatile int mice;
+
+// Keeps track of which bowls are occupied
+volatile int* occupiedBowls;
 
 /* 
  * The CatMouse simulation will call this function once before any cat or
@@ -33,13 +63,48 @@ static struct semaphore *globalCatMouseSem;
 void
 catmouse_sync_init(int bowls)
 {
-  /* replace this default implementation with your own implementation of catmouse_sync_init */
-
-  (void)bowls; /* keep the compiler from complaining about unused parameters */
-  globalCatMouseSem = sem_create("globalCatMouseSem",1);
-  if (globalCatMouseSem == NULL) {
-    panic("could not create global CatMouse synchronization semaphore");
+  speciesEntryLock = lock_create("SpeciesEntryLock");
+  if (speciesEntryLock == NULL) {
+    panic("could not create global SpeciesEntryLock synchronization lock");
   }
+
+  animalEntryLock = lock_create("AnimalEntryLock");
+  if (animalEntryLock == NULL) {
+    panic("could not create global AnimalEntryLock synchronization lock");
+  }
+
+  catLock = lock_create("CatLock");
+  if (catLock == NULL) {
+    panic("could not create global CatLock synchronization lock");
+  }
+
+  mouseLock = lock_create("MouseLock");
+  if (mouseLock == NULL) {
+    panic("could not create global MouseLock synchronization lock");
+  }
+
+  occupiedBowlsCV = kmalloc(sizeof(struct cv) * bowls);
+  if (occupiedBowlsCV == NULL) {
+    panic("could not allocate space for bowls CV");
+  }
+
+  occupiedBowls = kmalloc(sizeof(int) * bowls);
+  if (occupiedBowls == NULL) {
+    panic("could not allocate space for bowls int");
+  }
+
+  for(int i = 0; i < bowls; i++) {
+    occupiedBowlsCV[i] = cv_create("OccupiedBowlCV");
+    occupiedBowls[i] = 0;
+
+    if (occupiedBowlsCV[i] == NULL) {
+      panic("could not create global bowl CV");
+    }
+  }
+ 
+  cats = 0;
+  mice = 0;
+
   return;
 }
 
@@ -54,10 +119,26 @@ catmouse_sync_init(int bowls)
 void
 catmouse_sync_cleanup(int bowls)
 {
-  /* replace this default implementation with your own implementation of catmouse_sync_cleanup */
-  (void)bowls; /* keep the compiler from complaining about unused parameters */
-  KASSERT(globalCatMouseSem != NULL);
-  sem_destroy(globalCatMouseSem);
+  KASSERT(speciesEntryLock != NULL);
+  lock_destroy(speciesEntryLock);
+
+  KASSERT(animalEntryLock != NULL);
+  lock_destroy(animalEntryLock);
+
+  KASSERT(speciesEntryLock != NULL);
+  lock_destroy(catLock);
+
+  KASSERT(speciesEntryLock != NULL);
+  lock_destroy(mouseLock);
+
+  KASSERT(occupiedBowlsCV != NULL);
+  for (int i = 0; i < bowls; i++) {
+    KASSERT(occupiedBowlsCV[i] != NULL);
+    cv_destroy(occupiedBowlsCV[i]);
+  }
+
+  kfree(occupiedBowls);
+  kfree(occupiedBowlsCV);
 }
 
 
@@ -76,10 +157,38 @@ catmouse_sync_cleanup(int bowls)
 void
 cat_before_eating(unsigned int bowl) 
 {
-  /* replace this default implementation with your own implementation of cat_before_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  P(globalCatMouseSem);
+  // Decrement bowl for zero indexing
+  bowl = bowl - 1;
+
+  KASSERT(animalEntryLock != NULL);
+  KASSERT(catLock != NULL);
+  KASSERT(occupiedBowlsCV != NULL);
+  KASSERT(occupiedBowlsCV[bowl] != NULL);
+
+  lock_acquire(animalEntryLock);
+  lock_acquire(catLock);
+
+  // If no cats are in, try and allow cats in
+  if (cats == 0) {
+    lock_acquire(speciesEntryLock);
+  }
+  // Check if desired bowl is free
+  else if (occupiedBowls[bowl] == 1) {
+    cv_wait(occupiedBowlsCV[bowl], catLock);
+
+    // If while waiting, all the cats leave, you then need to re-acquire the species lock
+    if (lock_do_i_hold(speciesEntryLock) == 0) {
+      lock_acquire(speciesEntryLock);
+    }
+  }
+
+  // Mark bowl as now occupied by cat
+  occupiedBowls[bowl] = 1;
+  // Increment the number of cats eating
+  cats++;
+
+  lock_release(catLock);
+  lock_release(animalEntryLock);
 }
 
 /*
@@ -98,10 +207,28 @@ cat_before_eating(unsigned int bowl)
 void
 cat_after_eating(unsigned int bowl) 
 {
-  /* replace this default implementation with your own implementation of cat_after_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  V(globalCatMouseSem);
+  // Decrement bowl for zero indexing
+  bowl = bowl - 1;
+
+  KASSERT(catLock != NULL);
+  KASSERT(occupiedBowlsCV != NULL);
+  KASSERT(occupiedBowlsCV[bowl] != NULL);
+  KASSERT(speciesEntryLock != NULL);
+
+  lock_acquire(catLock);
+  
+  cats--;
+
+  // Should only signal a bowl that is occupied
+  KASSERT(occupiedBowls[bowl] == 1)
+  occupiedBowls[bowl] = 0;
+  cv_signal(occupiedBowlsCV[bowl], catLock);
+
+  if (cats == 0) {
+    lock_release(speciesEntryLock);
+  }
+
+  lock_release(catLock);
 }
 
 /*
@@ -119,10 +246,38 @@ cat_after_eating(unsigned int bowl)
 void
 mouse_before_eating(unsigned int bowl) 
 {
-  /* replace this default implementation with your own implementation of mouse_before_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  P(globalCatMouseSem);
+  // Decrement bowl for zero indexing
+  bowl = bowl - 1;
+
+  KASSERT(animalEntryLock != NULL);
+  KASSERT(mouseLock != NULL);
+  KASSERT(occupiedBowlsCV != NULL);
+  KASSERT(occupiedBowlsCV[bowl] != NULL);
+
+  lock_acquire(animalEntryLock);
+  lock_acquire(mouseLock);
+
+  // If no mice are in, try and allow mice in
+  if (mice == 0) {
+    lock_acquire(speciesEntryLock);
+  }
+  // Check if desired bowl is free
+  else if (occupiedBowls[bowl] == 1) {
+    cv_wait(occupiedBowlsCV[bowl], miceLock);
+
+    // If while waiting, all the mice leave, you then need to re-acquire the species lock
+    if (lock_do_i_hold(speciesEntryLock) == 0) {
+      lock_acquire(speciesEntryLock);
+    }
+  }
+
+  // Mark bowl as now occupied by mouse
+  occupiedBowls[bowl] = 1;
+  // Increment the number of mice eating
+  mouse++;
+
+  lock_release(mouseLock);
+  lock_release(animalEntryLock);
 }
 
 /*
@@ -141,8 +296,26 @@ mouse_before_eating(unsigned int bowl)
 void
 mouse_after_eating(unsigned int bowl) 
 {
-  /* replace this default implementation with your own implementation of mouse_after_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  V(globalCatMouseSem);
+  // Decrement bowl for zero indexing
+  bowl = bowl - 1;
+
+  KASSERT(mouseLock != NULL);
+  KASSERT(occupiedBowlsCV != NULL);
+  KASSERT(occupiedBowlsCV[bowl] != NULL);
+  KASSERT(speciesEntryLock != NULL);
+
+  lock_acquire(mouseLock);
+  
+  mice--;
+
+  // Should only signal a bowl that is occupied
+  KASSERT(occupiedBowls[bowl] == 1)
+  occupiedBowls[bowl] = 0;
+  cv_signal(occupiedBowlsCV[bowl], mouseLock);
+
+  if (mice == 0) {
+    lock_release(speciesEntryLock);
+  }
+
+  lock_release(mouseLock);
 }
