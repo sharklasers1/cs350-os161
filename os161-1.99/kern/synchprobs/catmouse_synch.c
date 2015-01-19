@@ -24,7 +24,7 @@
 static struct semaphore *speciesEntrySem;
 
 // Controls entry of individual animal eating
-static struct semaphore *animalEntrySem;
+static struct semaphore *requestEntrySem;
 
 // ========================================
 // Locks
@@ -75,9 +75,9 @@ catmouse_sync_init(int bowls)
     panic("could not create global speciesEntrySem synchronization lock");
   }
 
-  animalEntrySem = sem_create("animalEntrySem", 1);
-  if (animalEntrySem == NULL) {
-    panic("could not create global animalEntrySem synchronization lock");
+  requestEntrySem = sem_create("requestEntrySem", 1);
+  if (requestEntrySem == NULL) {
+    panic("could not create global requestEntrySem synchronization lock");
   }
 
   catLock = lock_create("CatLock");
@@ -130,8 +130,8 @@ catmouse_sync_cleanup(int bowls)
   KASSERT(speciesEntrySem != NULL);
   sem_destroy(speciesEntrySem);
 
-  KASSERT(animalEntrySem != NULL);
-  sem_destroy(animalEntrySem);
+  KASSERT(requestEntrySem != NULL);
+  sem_destroy(requestEntrySem);
 
   KASSERT(speciesEntrySem != NULL);
   lock_destroy(catLock);
@@ -168,20 +168,22 @@ cat_before_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(animalEntrySem != NULL);
+  KASSERT(requestEntrySem != NULL);
   KASSERT(catLock != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
-  P(animalEntrySem);
+  P(requestEntrySem);
   lock_acquire(catLock);
 
   // If no cats are in, try and allow cats in
   if (cats == 0) {
     P(speciesEntrySem);
   }
+  V(requestEntrySem);
+
   // Check if desired bowl is free
-  else if (occupiedBowls[bowl] == 1) {
+  while (occupiedBowls[bowl] == 1) {
     waiting++;
     cv_wait(occupiedBowlsCV[bowl], catLock);
     waiting--;
@@ -193,7 +195,6 @@ cat_before_eating(unsigned int bowl)
   cats++;
 
   lock_release(catLock);
-  V(animalEntrySem);
 }
 
 /*
@@ -254,20 +255,22 @@ mouse_before_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(animalEntrySem != NULL);
+  KASSERT(requestEntrySem != NULL);
   KASSERT(mouseLock != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
-  P(animalEntrySem);
+  P(requestEntrySem);
   lock_acquire(mouseLock);
 
   // If no mice are in, try and allow mice in
   if (mice == 0) {
     P(speciesEntrySem);
   }
+  V(requestEntrySem);
+
   // Check if desired bowl is free
-  else if (occupiedBowls[bowl] == 1) {
+  while (occupiedBowls[bowl] == 1) {
     // Increase the number of animals waiting
     waiting++;
     // Wait for the desired bowl to become free
@@ -281,7 +284,6 @@ mouse_before_eating(unsigned int bowl)
   mice++;
 
   lock_release(mouseLock);
-  V(animalEntrySem);
 }
 
 /*
