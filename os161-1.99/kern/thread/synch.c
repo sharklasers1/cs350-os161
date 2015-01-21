@@ -193,8 +193,7 @@ lock_destroy(struct lock *lock)
 void
 lock_acquire(struct lock *lock)
 {
-        KASSERT(lock != NULL);
-        KASSERT(curthread != NULL);
+        KASSERT(!lock_do_i_hold(lock));
 
         while(1) {
                 // The changing of the lock itself is a critical section, use a guard to protect it
@@ -316,7 +315,6 @@ cv_signal(struct cv *cv, struct lock *lock)
         // CV's are only intended to be used from within the critical section protected by the lock.
         // If you hold the lock, then you're in a critical section protected by it
         KASSERT(lock_do_i_hold(lock));
-
 
         // will wait for wchan to unlock before proceeding
         wchan_wakeone(cv->cv_wchan);

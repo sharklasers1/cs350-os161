@@ -54,7 +54,8 @@ volatile int cats;
 volatile int mice;
 
 // Keeps track of the number of waiting animals
-volatile int waiting;
+volatile int catsWaiting;
+volatile int miceWaiting;
 
 // Keeps track of which bowls are occupied
 volatile int *occupiedBowls;
@@ -111,7 +112,8 @@ catmouse_sync_init(int bowls)
  
   cats = 0;
   mice = 0;
-  waiting = 0;
+  catsWaiting = 0;
+  miceWaiting = 0;
 
   return;
 }
@@ -177,16 +179,16 @@ cat_before_eating(unsigned int bowl)
   lock_acquire(catLock);
 
   // If no cats are in, try and allow cats in
-  if (cats == 0) {
+  if (cats == 0 && catsWaiting == 0) {
     P(speciesEntrySem);
   }
   V(requestEntrySem);
 
   // Check if desired bowl is free
   while (occupiedBowls[bowl] == 1) {
-    waiting++;
+    catsWaiting++;
     cv_wait(occupiedBowlsCV[bowl], catLock);
-    waiting--;
+    catsWaiting--;
   }
 
   // Mark bowl as now occupied by cat
@@ -230,7 +232,7 @@ cat_after_eating(unsigned int bowl)
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], catLock);
 
-  if (cats == 0 && waiting == 0) {
+  if (cats == 0 && catsWaiting == 0) {
     V(speciesEntrySem);
   }
 
@@ -264,7 +266,7 @@ mouse_before_eating(unsigned int bowl)
   lock_acquire(mouseLock);
 
   // If no mice are in, try and allow mice in
-  if (mice == 0) {
+  if (mice == 0 && miceWaiting == 0) {
     P(speciesEntrySem);
   }
   V(requestEntrySem);
@@ -272,10 +274,10 @@ mouse_before_eating(unsigned int bowl)
   // Check if desired bowl is free
   while (occupiedBowls[bowl] == 1) {
     // Increase the number of animals waiting
-    waiting++;
+    miceWaiting++;
     // Wait for the desired bowl to become free
     cv_wait(occupiedBowlsCV[bowl], mouseLock);
-    waiting--;
+    miceWaiting--;
   }
 
   // Mark bowl as now occupied by mouse
@@ -319,7 +321,7 @@ mouse_after_eating(unsigned int bowl)
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], mouseLock);
 
-  if (mice == 0 && waiting == 0) {
+  if (mice == 0 && miceWaiting == 0) {
     V(speciesEntrySem);
   }
 
