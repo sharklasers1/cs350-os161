@@ -17,24 +17,10 @@
  */
 
 // ========================================
-// Semaphores
-// ========================================
-
-// Controls entry of species eating
-static struct semaphore *speciesEntrySem;
-
-// Controls entry of individual animal eating
-static struct semaphore *requestEntrySem;
-
-// ========================================
 // Locks
 // ========================================
 
-// Ensures synchronization of cat data
-static struct lock *catLock;
-
-// Ensures Synchronization of mouse data
-static struct lock *mouseLock;
+static struct lock *generalLock;
 
 // ========================================
 // Condition Variables
@@ -42,20 +28,38 @@ static struct lock *mouseLock;
 
 // Handles occupation of bowls
 static struct cv **occupiedBowlsCV;
+static struct cv *mouseCV;
+static struct cv *catCV;
 
 // ========================================
 // Global Variables
 // ========================================
 
-// Keeps track of number of cats
+// Keeps track of number of cats currently fetching food from bowls.
 volatile int cats;
 
-// Keeps track of number of mice
+// Keeps track of number of mice currently fetching food from bowls.
 volatile int mice;
 
-// Keeps track of the number of waiting animals
-volatile int catsWaiting;
-volatile int miceWaiting;
+// Keeps track of the number of cats that must go 
+// to a bowl before it can switch to the other animal's turn.
+volatile int catWaitingForTeam;
+
+// Keeps track of the number of cats that must go
+// to a bowl before it can switch to the other animal's turn.
+volatile int mouseWaitingForTeam;
+
+// Keeps track of the cats that came late to their
+// turn and will have to wait until next time
+volatile int catNextRoundWaiting;
+
+// Keeps track of the mice that came late to their
+// turn and will have to wait until next time.
+volatile int mouseNextRoundWaiting;
+
+// The current animal that has access to the bowls
+// 1 = cats, 0 = neither, -1 = mice
+volatile int entry;
 
 // Keeps track of which bowls are occupied
 volatile int *occupiedBowls;
@@ -71,24 +75,9 @@ volatile int *occupiedBowls;
 void
 catmouse_sync_init(int bowls)
 {
-  speciesEntrySem = sem_create("speciesEntrySem", 1);
-  if (speciesEntrySem == NULL) {
-    panic("could not create global speciesEntrySem synchronization lock");
-  }
-
-  requestEntrySem = sem_create("requestEntrySem", 1);
-  if (requestEntrySem == NULL) {
-    panic("could not create global requestEntrySem synchronization lock");
-  }
-
-  catLock = lock_create("CatLock");
-  if (catLock == NULL) {
-    panic("could not create global CatLock synchronization lock");
-  }
-
-  mouseLock = lock_create("MouseLock");
-  if (mouseLock == NULL) {
-    panic("could not create global MouseLock synchronization lock");
+  generalLock = lock_create("MouseLock");
+  if (generalLock == NULL) {
+    panic("could not create global generalLock synchronization lock");
   }
 
   occupiedBowlsCV = kmalloc(sizeof(struct cv) * bowls);
@@ -101,9 +90,19 @@ catmouse_sync_init(int bowls)
     panic("could not allocate space for bowls int");
   }
 
+  mouseCV = cv_create("MouseCV");
+  if (mouseCV == NULL) {
+    panic("could not create mouse CV");
+  }
+
+  catCV = cv_create("catCV");
+  if (catCV == NULL) {
+    panic("could not create mouse CV");
+  }
+
   for(int i = 0; i < bowls; i++) {
     occupiedBowlsCV[i] = cv_create("OccupiedBowlCV");
-    occupiedBowls[i] = 0; // set default for the bowl occupation to false
+    occupiedBowls[i] = 0;
 
     if (occupiedBowlsCV[i] == NULL) {
       panic("could not create global bowl CV");
@@ -112,8 +111,11 @@ catmouse_sync_init(int bowls)
  
   cats = 0;
   mice = 0;
-  catsWaiting = 0;
-  miceWaiting = 0;
+  catWaitingForTeam = 0;
+  mouseWaitingForTeam = 0;
+  catNextRoundWaiting = 0;
+  mouseNextRoundWaiting = 0;
+  entry = 0;
 
   return;
 }
@@ -129,17 +131,14 @@ catmouse_sync_init(int bowls)
 void
 catmouse_sync_cleanup(int bowls)
 {
-  KASSERT(speciesEntrySem != NULL);
-  sem_destroy(speciesEntrySem);
+  KASSERT(generalLock != NULL);
+  lock_destroy(generalLock);
 
-  KASSERT(requestEntrySem != NULL);
-  sem_destroy(requestEntrySem);
+  KASSERT(mouseCV != NULL);
+  cv_destroy(mouseCV);
 
-  KASSERT(speciesEntrySem != NULL);
-  lock_destroy(catLock);
-
-  KASSERT(speciesEntrySem != NULL);
-  lock_destroy(mouseLock);
+  KASSERT(catCV != NULL);
+  cv_destroy(catCV);
 
   KASSERT(occupiedBowlsCV != NULL);
   for (int i = 0; i < bowls; i++) {
@@ -170,33 +169,35 @@ cat_before_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(requestEntrySem != NULL);
-  KASSERT(catLock != NULL);
+  KASSERT(catCV != NULL);
+  KASSERT(generalLock != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
-  P(requestEntrySem);
-  lock_acquire(catLock);
-
-  // If no cats are in, try and allow cats in
-  if (cats == 0 && catsWaiting == 0) {
-    P(speciesEntrySem);
+  lock_acquire(generalLock);
+  if (entry == -1) { // 1 for mice
+    catWaitingForTeam++;
+    cv_wait(catCV, generalLock);
+    catWaitingForTeam--;
   }
-  V(requestEntrySem);
-
-  // Check if desired bowl is free
-  while (occupiedBowls[bowl] == 1) {
-    catsWaiting++;
-    cv_wait(occupiedBowlsCV[bowl], catLock);
-    catsWaiting--;
+  else if (mouseWaitingForTeam != 0) { // mouse wants in
+    catNextRoundWaiting++;
+    cv_wait(catCV, generalLock);
+    catWaitingForTeam--;
   }
 
-  // Mark bowl as now occupied by cat
-  occupiedBowls[bowl] = 1;
-  // Increment the number of cats eating
+  if (entry == 0) { // 0 for unclaimed
+    entry = 1; // -1 for cats
+  }
+
   cats++;
+  while (occupiedBowls[bowl] == 1) {
+    cv_wait(occupiedBowlsCV[bowl], generalLock);
+  }
+  occupiedBowls[bowl] = 1;
 
-  lock_release(catLock);
+  lock_release(generalLock);
+
 }
 
 /*
@@ -218,25 +219,24 @@ cat_after_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(catLock != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
-  KASSERT(speciesEntrySem != NULL);
+  KASSERT(mouseCV != NULL);
 
-  lock_acquire(catLock);
-  
+  lock_acquire(generalLock);
+
   cats--;
-
-  // Should only signal a bowl that is occupied
-  KASSERT(occupiedBowls[bowl] == 1);
   occupiedBowls[bowl] = 0;
-  cv_signal(occupiedBowlsCV[bowl], catLock);
+  cv_signal(occupiedBowlsCV[bowl], generalLock);
 
-  if (cats == 0 && catsWaiting == 0) {
-    V(speciesEntrySem);
+  if (mouseWaitingForTeam != 0 && catWaitingForTeam == 0 && cats == 0) {
+    entry = -1;
+    catWaitingForTeam = catNextRoundWaiting;
+    catNextRoundWaiting = 0;
+    cv_broadcast(mouseCV, generalLock);
   }
 
-  lock_release(catLock);
+  lock_release(generalLock);
 }
 
 /*
@@ -257,35 +257,35 @@ mouse_before_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(requestEntrySem != NULL);
-  KASSERT(mouseLock != NULL);
+  KASSERT(generalLock != NULL);
+  KASSERT(mouseCV != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
-  P(requestEntrySem);
-  lock_acquire(mouseLock);
-
-  // If no mice are in, try and allow mice in
-  if (mice == 0 && miceWaiting == 0) {
-    P(speciesEntrySem);
+  lock_acquire(generalLock);
+  if (entry == 1) { // 1 for cats
+    mouseWaitingForTeam++;
+    cv_wait(mouseCV, generalLock);
+    mouseWaitingForTeam--;
   }
-  V(requestEntrySem);
-
-  // Check if desired bowl is free
-  while (occupiedBowls[bowl] == 1) {
-    // Increase the number of animals waiting
-    miceWaiting++;
-    // Wait for the desired bowl to become free
-    cv_wait(occupiedBowlsCV[bowl], mouseLock);
-    miceWaiting--;
+  else if (catWaitingForTeam != 0) { // cat wants in
+    mouseNextRoundWaiting++;
+    cv_wait(mouseCV, generalLock);
+    mouseWaitingForTeam--;
   }
 
-  // Mark bowl as now occupied by mouse
-  occupiedBowls[bowl] = 1;
-  // Increment the number of mice eating
+  if (entry == 0) { // 0 for unclaimed
+    entry = -1; // -1 for mice
+  }
+
   mice++;
+  while (occupiedBowls[bowl] == 1) {
+    cv_wait(occupiedBowlsCV[bowl], generalLock);
+  }
+  occupiedBowls[bowl] = 1;
 
-  lock_release(mouseLock);
+  lock_release(generalLock);
+
 }
 
 /*
@@ -307,23 +307,22 @@ mouse_after_eating(unsigned int bowl)
   // Decrement bowl for zero indexing
   bowl = bowl - 1;
 
-  KASSERT(mouseLock != NULL);
   KASSERT(occupiedBowlsCV != NULL);
   KASSERT(occupiedBowlsCV[bowl] != NULL);
-  KASSERT(speciesEntrySem != NULL);
+  KASSERT(mouseCV != NULL);
 
-  lock_acquire(mouseLock);
-  
+  lock_acquire(generalLock);
+
   mice--;
-
-  // Should only signal a bowl that is occupied
-  KASSERT(occupiedBowls[bowl] == 1);
   occupiedBowls[bowl] = 0;
-  cv_signal(occupiedBowlsCV[bowl], mouseLock);
+  cv_signal(occupiedBowlsCV[bowl], generalLock);
 
-  if (mice == 0 && miceWaiting == 0) {
-    V(speciesEntrySem);
+  if (catWaitingForTeam != 0 && mouseWaitingForTeam == 0 && mice == 0) {
+    entry = 1;
+    mouseWaitingForTeam = mouseNextRoundWaiting;
+    mouseNextRoundWaiting = 0;
+    cv_broadcast(catCV, generalLock);
   }
 
-  lock_release(mouseLock);
+  lock_release(generalLock);
 }
