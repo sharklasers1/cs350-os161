@@ -41,21 +41,18 @@ volatile int cats;
 // Keeps track of number of mice currently fetching food from bowls.
 volatile int mice;
 
-// Keeps track of the number of cats that must go 
-// to a bowl before it can switch to the other animal's turn.
-volatile int catWaitingForTeam;
+// Keeps track of the number of cats/mice that MUST
+// go when it becomes the cats/mice's turn.
+volatile int catOnTurn;
+volatile int mouseOnTurn;
 
-// Keeps track of the number of cats that must go
-// to a bowl before it can switch to the other animal's turn.
-volatile int mouseWaitingForTeam;
-
-// Keeps track of the cats that came late to their
-// turn and will have to wait until next time
-volatile int catNextRoundWaiting;
+// Keeps track of the cats/mice that MUST go not on their current turn,
+// but on the cats/mice's NEXT turn.
+volatile int catOnNextTurn;
 
 // Keeps track of the mice that came late to their
 // turn and will have to wait until next time.
-volatile int mouseNextRoundWaiting;
+volatile int mouseOnNextTurn;
 
 // The current animal that has access to the bowls
 // 1 = cats, 0 = neither, -1 = mice
@@ -111,10 +108,10 @@ catmouse_sync_init(int bowls)
  
   cats = 0;
   mice = 0;
-  catWaitingForTeam = 0;
-  mouseWaitingForTeam = 0;
-  catNextRoundWaiting = 0;
-  mouseNextRoundWaiting = 0;
+  catOnTurn = 0;
+  mouseOnTurn = 0;
+  catOnNextTurn = 0;
+  mouseOnNextTurn = 0;
   entry = 0;
 
   return;
@@ -176,14 +173,14 @@ cat_before_eating(unsigned int bowl)
 
   lock_acquire(generalLock);
   if (entry == -1) { // 1 for mice
-    catWaitingForTeam++;
+    catOnTurn++;
     cv_wait(catCV, generalLock);
-    catWaitingForTeam--;
+    catOnTurn--;
   }
-  else if (mouseWaitingForTeam != 0) { // mouse wants in
-    catNextRoundWaiting++;
+  else if (mouseOnTurn != 0) { // mouse wants in
+    catOnNextTurn++;
     cv_wait(catCV, generalLock);
-    catWaitingForTeam--;
+    catOnTurn--;
   }
 
   if (entry == 0) { // 0 for unclaimed
@@ -229,10 +226,10 @@ cat_after_eating(unsigned int bowl)
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], generalLock);
 
-  if (mouseWaitingForTeam != 0 && catWaitingForTeam == 0 && cats == 0) {
+  if (mouseOnTurn != 0 && catOnTurn == 0 && cats == 0) {
     entry = -1;
-    catWaitingForTeam = catNextRoundWaiting;
-    catNextRoundWaiting = 0;
+    catOnTurn = catOnNextTurn;
+    catOnNextTurn = 0;
     cv_broadcast(mouseCV, generalLock);
   }
 
@@ -264,14 +261,14 @@ mouse_before_eating(unsigned int bowl)
 
   lock_acquire(generalLock);
   if (entry == 1) { // 1 for cats
-    mouseWaitingForTeam++;
+    mouseOnTurn++;
     cv_wait(mouseCV, generalLock);
-    mouseWaitingForTeam--;
+    mouseOnTurn--;
   }
-  else if (catWaitingForTeam != 0) { // cat wants in
-    mouseNextRoundWaiting++;
+  else if (catOnTurn != 0) { // cat wants in
+    mouseOnNextTurn++;
     cv_wait(mouseCV, generalLock);
-    mouseWaitingForTeam--;
+    mouseOnTurn--;
   }
 
   if (entry == 0) { // 0 for unclaimed
@@ -317,10 +314,10 @@ mouse_after_eating(unsigned int bowl)
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], generalLock);
 
-  if (catWaitingForTeam != 0 && mouseWaitingForTeam == 0 && mice == 0) {
+  if (catOnTurn != 0 && mouseOnTurn == 0 && mice == 0) {
     entry = 1;
-    mouseWaitingForTeam = mouseNextRoundWaiting;
-    mouseNextRoundWaiting = 0;
+    mouseOnTurn = mouseOnNextTurn;
+    mouseOnNextTurn = 0;
     cv_broadcast(catCV, generalLock);
   }
 
