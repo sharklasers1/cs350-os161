@@ -49,9 +49,6 @@ volatile int mouseOnTurn;
 // Keeps track of the cats/mice that MUST go not on their current turn,
 // but on the cats/mice's NEXT turn.
 volatile int catOnNextTurn;
-
-// Keeps track of the mice that came late to their
-// turn and will have to wait until next time.
 volatile int mouseOnNextTurn;
 
 // The current animal that has access to the bowls
@@ -172,21 +169,28 @@ cat_before_eating(unsigned int bowl)
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
   lock_acquire(generalLock);
-  if (entry == -1) { // 1 for mice
+  if (entry == -1) {
+    // If it is the mice' turn and a cat wants in,
+    // add the cat to the list of cats going on their turn.
     catOnTurn++;
     cv_wait(catCV, generalLock);
     catOnTurn--;
   }
-  else if (mouseOnTurn != 0) { // mouse wants in
+  else if (mouseOnTurn != 0) {
+    // If it is currently your turn and the mice want in, add any
+    // additional cats to the list of cats going next time.
     catOnNextTurn++;
     cv_wait(catCV, generalLock);
+    // When the cat is awoken, it is now their next turn and they have
+    // been moved from catOnNextTurn to catOnTurn as one of the current cats to go
     catOnTurn--;
   }
 
-  if (entry == 0) { // 0 for unclaimed
-    entry = 1; // -1 for cats
+  if (entry == 0) {
+    entry = 1;
   }
 
+  // The cat is in the process of getting the bowl
   cats++;
   while (occupiedBowls[bowl] == 1) {
     cv_wait(occupiedBowlsCV[bowl], generalLock);
@@ -222,10 +226,13 @@ cat_after_eating(unsigned int bowl)
 
   lock_acquire(generalLock);
 
+  // The cat has now concluded his business at the bowl.
   cats--;
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], generalLock);
 
+  // If there are no cats eating, and no more cats are scheduled
+  // to eat this turn, and there are mice waiting, switch to the mice's turn.
   if (mouseOnTurn != 0 && catOnTurn == 0 && cats == 0) {
     entry = -1;
     catOnTurn = catOnNextTurn;
@@ -260,21 +267,28 @@ mouse_before_eating(unsigned int bowl)
   KASSERT(occupiedBowlsCV[bowl] != NULL);
 
   lock_acquire(generalLock);
-  if (entry == 1) { // 1 for cats
+  if (entry == 1) {
+    // If it is the cats' turn and a mouse wants in,
+    // add the mouse to the list of mice going on their turn.
     mouseOnTurn++;
     cv_wait(mouseCV, generalLock);
     mouseOnTurn--;
   }
-  else if (catOnTurn != 0) { // cat wants in
+  else if (catOnTurn != 0) {
+    // If it is currently your turn and the cats want in, add any
+    // additional mice to the list of mice going next time.
     mouseOnNextTurn++;
     cv_wait(mouseCV, generalLock);
+    // When the mouse is awoken, it is now their next turn and they have
+    // been moved from mouseOnNextTurn to mouseOnTurn as one of the current mice to go
     mouseOnTurn--;
   }
 
-  if (entry == 0) { // 0 for unclaimed
-    entry = -1; // -1 for mice
+  if (entry == 0) {
+    entry = -1;
   }
 
+  // The mouse is in the process of getting the bowl
   mice++;
   while (occupiedBowls[bowl] == 1) {
     cv_wait(occupiedBowlsCV[bowl], generalLock);
@@ -310,10 +324,13 @@ mouse_after_eating(unsigned int bowl)
 
   lock_acquire(generalLock);
 
+  // The cat has now concluded his business at the bowl.
   mice--;
   occupiedBowls[bowl] = 0;
   cv_signal(occupiedBowlsCV[bowl], generalLock);
 
+  // If there are no mice eating, and no more mice are scheduled
+  // to eat this turn, and there are cats waiting, switch to the cats' turn.
   if (catOnTurn != 0 && mouseOnTurn == 0 && mice == 0) {
     entry = 1;
     mouseOnTurn = mouseOnNextTurn;
