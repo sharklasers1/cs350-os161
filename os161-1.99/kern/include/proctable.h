@@ -10,11 +10,23 @@
 // Begins at 1 because in wait.h, PID 0 is defined in a special way for process groups.
 #define MIN_PID 1
 
+// procTable to hold all processes
+struct proc **procTable;
+
+// lock to shield critical sections, such as when a parent calls wait as child calls exit
+struct lock *procTableLock;
+
 // Call once during system startup to allocate data structures.
 void proctable_bootstrap(void);
 
 // Add process to table, associate it with its parent
-void proctable_add_process(struct proc *current, struct proc *parent);
+void proctable_add_process(struct proc *proc_created, struct proc *proc_parent);
+
+// Switch a process from running to exiting
+void proctable_exit_process(struct proc *proc_exited, int exitCode);
+
+// Remove a process from the process table
+void proctable_remove_process(struct proc *proc_removed);
 
 #endif /* _PROCTABLE_H_ */
 

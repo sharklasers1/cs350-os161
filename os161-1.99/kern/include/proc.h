@@ -48,7 +48,7 @@ struct semaphore;
 
 #define PROC_EXITED 0
 #define PROC_RUNNING 1
-#define PROC_NO_PARENT -1
+#define PROC_NO_PID -1
 
 /*
  * Process structure.
@@ -77,8 +77,8 @@ struct proc {
 
   pid_t p_pid; // Process id of current process.
   pid_t p_ppid; // Process id of parent process.
-  char *p_state; // State of the process, running or exited.
-  int p_exitCode; // Exit code.
+  int p_state; // State of the process, running or exited.
+  int p_exitcode; // Exit code.
 
 };
 
@@ -111,10 +111,28 @@ struct addrspace *curproc_getas(void);
 /* Change the address space of the current process, and return the old one. */
 struct addrspace *curproc_setas(struct addrspace *);
 
-// Returns the process' PID
-int getPid(struct proc *proc);
+// Returns the process' exitcode
+int getExitcode(struct proc *proc);
 
 // Returns the process' PID
-int getPPid(struct proc *proc);
+int getPID(struct proc *proc);
+
+// Returns the process' PPID
+int getPPID(struct proc *proc);
+
+// Returns the process' state
+int getState(struct proc *proc);
+
+// Sets the process' exitcode
+void setExitcode(struct proc *proc, int exitcode);
+
+// Sets the process' PID
+void setPID(struct proc *proc, int newPID);
+
+// Sets the process' PPID
+void setPPID(struct proc *proc, int newPPID);
+
+// Sets the process' state
+void setState(struct proc *proc, int newState);
 
 #endif /* _PROC_H_ */

@@ -43,6 +43,7 @@
  */
 
 #include <types.h>
+#include <synch.h>
 #include <proc.h>
 #include <proctable.h>
 #include <current.h>
@@ -67,23 +68,67 @@ static unsigned int proc_count;
 /* it would be better to use a lock here, but we use a semaphore because locks are not implemented in the base kernel */ 
 static struct semaphore *proc_count_mutex;
 /* used to signal the kernel menu thread when there are no processes */
-struct semaphore *no_proc_sem;   
+struct semaphore *no_proc_sem;
 #endif  // UW
 
+// Returns the process' exitcode
+int getExitcode(struct proc *proc) {
+	KASSERT(proc != NULL);
+
+	return proc->p_exitcode;
+}
+
 // Returns the processes' PID
-int getPid(struct proc *proc) {
+int getPID(struct proc *proc) {
 	KASSERT(proc != NULL);
 	KASSERT(proc->p_pid > 0);
 
 	return proc->p_pid;
 }
 
-// Returns the processes' PID
-int getPPid(struct proc *proc) {
+// Returns the processes' PPID
+int getPPID(struct proc *proc) {
 	KASSERT(proc != NULL);
-	KASSERT(proc->p_ppid == PROC_NO_PARENT || proc->p_ppid > 0);
 
 	return proc->p_ppid;
+}
+
+// Returns the process' state
+int getState(struct proc *proc) {
+	KASSERT(proc != NULL);
+
+	return proc->p_state;
+}
+
+// Sets the process' PID, should only happen once when added to process table
+void setPID(struct proc *proc, int newPID) {
+	KASSERT(proc != NULL);
+	KASSERT(newPID >= MIN_PID && newPID <= MAX_PID);
+
+	proc->p_pid = newPID;
+}
+
+// Sets the process' PPID
+void setPPID(struct proc *proc, int newPPID) {
+	KASSERT(proc != NULL);
+	KASSERT(newPPID == PROC_NO_PID || newPPID > 0);
+
+	proc->p_ppid = newPPID;
+}
+
+// Sets the process' state
+void setState(struct proc *proc, int newState) {
+	KASSERT(proc != NULL);
+	KASSERT(newState == PROC_RUNNING || newState == PROC_EXITED);
+
+	proc->p_state = newState;
+}
+
+// Sets the process' exitcode
+void setExitcode(struct proc *proc, int exitcode) {
+	KASSERT(proc != NULL);
+
+	proc->p_exitcode = exitcode;
 }
 
 /*
@@ -119,7 +164,14 @@ proc_create(const char *name)
 #endif // UW
 
 	// Add newly created process to the process table.
-	proctable_add_process(proc, NULL);
+	if (curthread == NULL) {
+		proctable_add_process(proc, NULL);
+	}
+	else {
+		lock_acquire(procTableLock);
+		proctable_add_process(proc, NULL);
+		lock_release(procTableLock);
+	}
 
 	return proc;
 }
