@@ -44,6 +44,7 @@
 
 #include <types.h>
 #include <proc.h>
+#include <proctable.h>
 #include <current.h>
 #include <addrspace.h>
 #include <vnode.h>
@@ -69,7 +70,21 @@ static struct semaphore *proc_count_mutex;
 struct semaphore *no_proc_sem;   
 #endif  // UW
 
+// Returns the processes' PID
+int getPid(struct proc *proc) {
+	KASSERT(proc != NULL);
+	KASSERT(proc->p_pid > 0);
 
+	return proc->p_pid;
+}
+
+// Returns the processes' PID
+int getPPid(struct proc *proc) {
+	KASSERT(proc != NULL);
+	KASSERT(proc->p_ppid == PROC_NO_PARENT || proc->p_ppid > 0);
+
+	return proc->p_ppid;
+}
 
 /*
  * Create a proc structure.
@@ -102,6 +117,9 @@ proc_create(const char *name)
 #ifdef UW
 	proc->console = NULL;
 #endif // UW
+
+	// Add newly created process to the process table.
+	proctable_add_process(proc, NULL);
 
 	return proc;
 }

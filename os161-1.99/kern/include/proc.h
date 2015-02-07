@@ -38,12 +38,17 @@
 
 #include <spinlock.h>
 #include <thread.h> /* required for struct threadarray */
+#include "opt-A2.h"
 
 struct addrspace;
 struct vnode;
 #ifdef UW
 struct semaphore;
 #endif // UW
+
+#define PROC_EXITED 0
+#define PROC_RUNNING 1
+#define PROC_NO_PARENT -1
 
 /*
  * Process structure.
@@ -69,6 +74,12 @@ struct proc {
 #endif
 
 	/* add more material here as needed */
+
+  pid_t p_pid; // Process id of current process.
+  pid_t p_ppid; // Process id of parent process.
+  char *p_state; // State of the process, running or exited.
+  int p_exitCode; // Exit code.
+
 };
 
 /* This is the process structure for the kernel and for kernel-only threads. */
@@ -100,5 +111,10 @@ struct addrspace *curproc_getas(void);
 /* Change the address space of the current process, and return the old one. */
 struct addrspace *curproc_setas(struct addrspace *);
 
+// Returns the process' PID
+int getPid(struct proc *proc);
+
+// Returns the process' PID
+int getPPid(struct proc *proc);
 
 #endif /* _PROC_H_ */
