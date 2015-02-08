@@ -304,7 +304,7 @@ proctable.o: ../../proctable/proctable.c ../../include/types.h \
   ../../include/array.h ../../include/lib.h opt-noasserts.h \
   ../../include/threadlist.h includelinks/machine/thread.h \
   ../../include/setjmp.h includelinks/kern/machine/setjmp.h opt-A2.h \
-  ../../include/synch.h
+  ../../include/synch.h ../../include/kern/wait.h
 main.o: ../../startup/main.c ../../include/types.h \
   ../../include/kern/types.h includelinks/kern/machine/types.h \
   includelinks/machine/types.h ../../include/kern/errno.h \

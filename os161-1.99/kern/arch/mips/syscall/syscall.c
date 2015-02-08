@@ -124,10 +124,11 @@ syscall(struct trapframe *tf)
 	  err = sys_getpid((pid_t *)&retval);
 	  break;
 	case SYS_waitpid:
-	  err = sys_waitpid((pid_t)tf->tf_a0,
-			    (userptr_t)tf->tf_a1,
-			    (int)tf->tf_a2,
-			    (pid_t *)&retval);
+	  err = sys_waitpid((pid_t)tf->tf_a0, // pid argument for who you want to wait on
+			    (userptr_t)tf->tf_a1, // status argument for where you want the exit code to go
+			    (int)tf->tf_a2, // additional arguments as options
+			    (pid_t *)&retval); // like the exit system call, passes the return value where you should store the system
+	  			// call's desired return value. For waitpid, return the pid whose exit status is stored in `status`.
 	  break;
 #endif // UW
 
@@ -146,12 +147,12 @@ syscall(struct trapframe *tf)
 		 * userlevel to a return value of -1 and the error
 		 * code in errno.
 		 */
-		tf->tf_v0 = err;
+		tf->tf_v0 = err; // on failure, v0 contains the error code, which is transferred to errno and replaced with -1 in the syscall wrapper.
 		tf->tf_a3 = 1;      /* signal an error */
 	}
 	else {
 		/* Success. */
-		tf->tf_v0 = retval;
+		tf->tf_v0 = retval; // on success, the return value should go in v0
 		tf->tf_a3 = 0;      /* signal no error */
 	}
 	

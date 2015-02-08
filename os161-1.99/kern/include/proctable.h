@@ -10,6 +10,8 @@
 // Begins at 1 because in wait.h, PID 0 is defined in a special way for process groups.
 #define MIN_PID 1
 
+int procCount;
+
 // procTable to hold all processes
 struct proc **procTable;
 
@@ -27,6 +29,9 @@ void proctable_exit_process(struct proc *proc_exited, int exitCode);
 
 // Remove a process from the process table
 void proctable_remove_process(struct proc *proc_removed);
+
+// Return a process from the proctable
+struct proc* proctable_get_process(pid_t pid);
 
 #endif /* _PROCTABLE_H_ */
 

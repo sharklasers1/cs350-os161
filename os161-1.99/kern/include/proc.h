@@ -79,6 +79,7 @@ struct proc {
   pid_t p_ppid; // Process id of parent process.
   int p_state; // State of the process, running or exited.
   int p_exitcode; // Exit code.
+  struct cv *wait_cv; // parent proc waits on this cv until its child exits.
 
 };
 

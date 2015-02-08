@@ -150,6 +150,11 @@ proc_create(const char *name)
 		return NULL;
 	}
 
+	proc->wait_cv = cv_create("procCV");
+	if (proc->wait_cv == NULL) {
+		panic("could not create proc CV");
+	}
+
 	threadarray_init(&proc->p_threads);
 	spinlock_init(&proc->p_lock);
 
@@ -164,7 +169,9 @@ proc_create(const char *name)
 #endif // UW
 
 	// Add newly created process to the process table.
-	if (curthread == NULL) {
+	// Don't acquire the lock if you're the first process, since threads for synchronization
+	// primitives have not been set up.
+	if (procCount == 0) {
 		proctable_add_process(proc, NULL);
 	}
 	else {

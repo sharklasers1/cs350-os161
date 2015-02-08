@@ -1,6 +1,7 @@
 #include <types.h>
 #include <proctable.h>
 #include <proc.h>
+#include <kern/wait.h>
 /*
  * Each index of the global proctable represents a PID that can be used to lookup a desired process.
  * 
@@ -15,6 +16,8 @@ void proctable_bootstrap(void) {
   }
 
   procTableLock = lock_create("proctableLock");
+
+  procCount = 0;
 
   if (procTableLock == NULL) {
     panic("could not create proctableLock");
@@ -35,9 +38,12 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
   for (int i = MIN_PID; i < MAX_PID; i++) {
     if (procTable[i] == NULL) {
       setPID(proc_created, i);
+      procTable[i] = proc_created;
       break;
     }
   }
+
+  procCount++;
   
   DEBUG(DB_EXEC, "Found pid %d", proc_created->p_pid);
 
@@ -61,13 +67,17 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
   KASSERT(proc_exited->p_pid > 0);
 
   setState(proc_exited, PROC_EXITED);
-  setExitcode(proc_exited, exitcode);
+
+  // encode the exit code as per the docs.
+  setExitcode(proc_exited, _MKWAIT_EXIT(exitcode));
 
   // If proc_exited has living children, they should now have a NULL parent
   // If proc_exited has dead children, they should now be destroyed
 
+  int exitedPID = getPID(proc_exited);
+
   for (int i = MIN_PID; i < MAX_PID; i++) {
-    if (procTable[i] != NULL && getPPID(procTable[i]) == getPID(procTable[i])) {
+    if (procTable[i] != NULL && getPPID(procTable[i]) == exitedPID) {
       // Check state of children
       int state = getState(procTable[i]);
       
@@ -88,10 +98,9 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
     proctable_remove_process(proc_exited);
   }
 
-  // Otherwise if proc_exited has a parent, proc_exited must switch to exit state
+  // Otherwise if proc_exited has a parent, proc_exited must wake its potentially waiting parent
   else {
-    setState(proc_exited, PROC_EXITED);
-    setExitcode(proc_exited, exitcode);
+    cv_signal(proc_exited->wait_cv, procTableLock);
   }
 }
 
@@ -102,8 +111,15 @@ void proctable_remove_process(struct proc *proc_removed) {
 
   int pid = getPID(proc_removed);
   procTable[pid] = NULL;
+  procCount--;
 
   /* if this is the last user process in the system, proc_destroy()
      will wake up the kernel menu thread */
   proc_destroy(proc_removed);
+}
+
+// Return a process from the process table
+struct proc* proctable_get_process(pid_t pid) {
+  KASSERT(pid >= MIN_PID && pid <= MAX_PID);
+  return procTable[pid];
 }
