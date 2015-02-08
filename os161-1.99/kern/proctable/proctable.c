@@ -23,7 +23,7 @@ void proctable_bootstrap(void) {
     panic("could not create proctableLock");
   }
 
-  for (int i = MIN_PID; i < MAX_PID; i++) {
+  for (int i = MIN_PID; i <= MAX_PID; i++) {
     procTable[i] = NULL;
   }
 }
@@ -120,6 +120,9 @@ void proctable_remove_process(struct proc *proc_removed) {
 
 // Return a process from the process table
 struct proc* proctable_get_process(pid_t pid) {
-  KASSERT(pid >= MIN_PID && pid <= MAX_PID);
+  if (pid < MIN_PID && pid > MAX_PID) {
+    return NULL;
+  }
+
   return procTable[pid];
 }

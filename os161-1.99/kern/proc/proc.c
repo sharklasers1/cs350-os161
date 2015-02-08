@@ -173,6 +173,7 @@ proc_create(const char *name)
 	// primitives have not been set up.
 	if (procCount == 0) {
 		proctable_add_process(proc, NULL);
+		initProc = proctable_get_process(MIN_PID);
 	}
 	else {
 		lock_acquire(procTableLock);

@@ -11,6 +11,7 @@
 #define MIN_PID 1
 
 int procCount;
+struct proc *initProc;
 
 // procTable to hold all processes
 struct proc **procTable;
