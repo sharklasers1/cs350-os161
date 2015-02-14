@@ -2,7 +2,7 @@
 TOP=../../..
 .include "$(TOP)/mk/os161.config.mk"
 
-PROG=waitpidfailure
+PROG=waitpid
 SRCS=$(PROG).c
 
 BINDIR=/my-testbin

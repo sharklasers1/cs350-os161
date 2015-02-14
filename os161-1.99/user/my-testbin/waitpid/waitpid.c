@@ -23,9 +23,14 @@ main(int argc, char *argv[])
 
   int rv, x;
   rv = waitpid(getpid(), &x, 0);
-
+  printf("Call 1:\n");
   printf("Return value: %d\n", rv);
   printf("Error code: %d\n", errno);
   
+
+  printf("Call 2:\n");
+  rv = waitpid(-4, &x, 0);
+  printf("Return value: %d\n", rv);
+  printf("Error code: %d\n", errno);
   return(0);
 }

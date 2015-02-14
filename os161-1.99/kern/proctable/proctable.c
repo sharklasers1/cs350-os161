@@ -120,7 +120,7 @@ void proctable_remove_process(struct proc *proc_removed) {
 
 // Return a process from the process table
 struct proc* proctable_get_process(pid_t pid) {
-  if (pid < MIN_PID && pid > MAX_PID) {
+  if (pid < MIN_PID || pid > MAX_PID) {
     return NULL;
   }
 

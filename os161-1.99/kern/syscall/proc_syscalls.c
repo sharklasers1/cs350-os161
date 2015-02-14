@@ -92,7 +92,8 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
       result = EFAULT;
     }
 
-    if (result != 0) {
+    // If any of the above errors were set, return error
+    if (result) {
       lock_release(procTableLock);
       return(result);
     }
@@ -105,8 +106,9 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
     }
 
     // We are now awoken, or the child had already exited. Either way
-    // er can remove the child from the process table and return his exit code.
+    // we can remove the child from the process table and return his exit code.
     exitstatus = getExitcode(child);
+    // child is now a zombie, as its sole parent we can now kill it
     proctable_remove_process(child);
 
   lock_release(procTableLock);
