@@ -109,11 +109,11 @@ boot(void)
 	ram_bootstrap();
 
 	// System proctable setup for A2A
-  DEBUG(DB_EXEC, "Bootstrapping proctable");
+  DEBUG(DB_EXEC, "Bootstrapping proctable\n");
 
 	proctable_bootstrap();
 
-  DEBUG(DB_EXEC, "Finished Bootstrapping proctable");
+  DEBUG(DB_EXEC, "Finished Bootstrapping proctable\n");
 
 	proc_bootstrap();
 	thread_bootstrap();
