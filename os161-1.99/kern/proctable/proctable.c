@@ -33,7 +33,7 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
   KASSERT(procTableLock != NULL);
   KASSERT(proc_created != NULL);
   
-  DEBUG(DB_EXEC, "Adding to proctable");
+  DEBUG(DB_EXEC, "Adding to proctable\n");
   
   for (int i = MIN_PID; i < MAX_PID; i++) {
     if (procTable[i] == NULL) {
@@ -45,7 +45,7 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
 
   procCount++;
   
-  DEBUG(DB_EXEC, "Found pid %d", proc_created->p_pid);
+  DEBUG(DB_EXEC, "Found pid %d\n", proc_created->p_pid);
 
   if (proc_parent == NULL) {
     setPPID(proc_created, PROC_NO_PID);
@@ -56,13 +56,15 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
 
   setState(proc_created, PROC_RUNNING);
 
-  DEBUG(DB_EXEC, "Finished with proctable");
+  DEBUG(DB_EXEC, "Finished adding to proctable\n");
 
   return;
 }
 
 // Switch a process from running to exited
 void proctable_exit_process(struct proc *proc_exited, int exitcode) {
+  DEBUG(DB_EXEC, "Exiting from proctable\n");
+
   KASSERT(proc_exited != NULL);
   KASSERT(proc_exited->p_pid > 0);
 
@@ -102,10 +104,14 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
   else {
     cv_signal(proc_exited->wait_cv, procTableLock);
   }
+
+  DEBUG(DB_EXEC, "Finished exiting from proctable\n");
 }
 
 // Remove a process from the process table
 void proctable_remove_process(struct proc *proc_removed) {
+  DEBUG(DB_EXEC, "Removing from proctable\n");
+
   KASSERT(proc_removed != NULL);
   KASSERT(getPPID(proc_removed) == PROC_NO_PID);
 
@@ -116,6 +122,8 @@ void proctable_remove_process(struct proc *proc_removed) {
   /* if this is the last user process in the system, proc_destroy()
      will wake up the kernel menu thread */
   proc_destroy(proc_removed);
+
+  DEBUG(DB_EXEC, "Finished removing from proctable\n");
 }
 
 // Return a process from the process table
