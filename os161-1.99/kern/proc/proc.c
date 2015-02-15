@@ -81,7 +81,6 @@ int getExitcode(struct proc *proc) {
 // Returns the processes' PID
 int getPID(struct proc *proc) {
 	KASSERT(proc != NULL);
-	KASSERT(proc->p_pid > 0);
 
 	return proc->p_pid;
 }
@@ -103,7 +102,7 @@ int getState(struct proc *proc) {
 // Sets the process' PID, should only happen once when added to process table
 void setPID(struct proc *proc, int newPID) {
 	KASSERT(proc != NULL);
-	KASSERT(newPID >= MIN_PID && newPID <= MAX_PID);
+	KASSERT((newPID >= MIN_PID && newPID <= MAX_PID) || newPID == PROC_NO_PID);
 
 	proc->p_pid = newPID;
 }
@@ -168,17 +167,25 @@ proc_create(const char *name)
 	proc->console = NULL;
 #endif // UW
 
+	// initialize PID to invalid
+	setPID(proc, PROC_NO_PID);
+
 	// Add newly created process to the process table.
 	// Don't acquire the lock if you're the first process, since threads for synchronization
 	// primitives have not been set up.
+	int err;
 	if (procCount == 0) {
-		proctable_add_process(proc, NULL);
+		err = proctable_add_process(proc, NULL);
 		initProc = proctable_get_process(MIN_PID);
 	}
 	else {
 		lock_acquire(procTableLock);
-		proctable_add_process(proc, NULL);
+		err = proctable_add_process(proc, curproc);
 		lock_release(procTableLock);
+	}
+
+	if (err) {
+		return NULL;
 	}
 
 	return proc;

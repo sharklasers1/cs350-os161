@@ -35,7 +35,7 @@
 #include <thread.h>
 #include <current.h>
 #include <syscall.h>
-
+#include <addrspace.h>
 
 /*
  * System call dispatcher.
@@ -130,6 +130,11 @@ syscall(struct trapframe *tf)
 			    (pid_t *)&retval); // like the exit system call, passes the return value where you should store the system
 	  			// call's desired return value. For waitpid, return the pid whose exit status is stored in `status`.
 	  break;
+	case SYS_fork:
+		// call sys_fork with return value that will, if succeeded, contain the child PID for the parent process.
+		err = sys_fork(tf, (pid_t *)&retval);
+		break;
+
 #endif // UW
 
 	    /* Add stuff here */
@@ -140,14 +145,13 @@ syscall(struct trapframe *tf)
 	  break;
 	}
 
-
 	if (err) {
 		/*
 		 * Return the error code. This gets converted at
 		 * userlevel to a return value of -1 and the error
 		 * code in errno.
 		 */
-		tf->tf_v0 = err; // on failure, v0 contains the error code, which is transferred to errno and replaced with -1 in the syscall wrapper.
+		tf->tf_v0 = err; // on failure, v0 contains the error code, which is transferred to errno and replaced with -1 in the syscall.S
 		tf->tf_a3 = 1;      /* signal an error */
 	}
 	else {
@@ -178,7 +182,21 @@ syscall(struct trapframe *tf)
  * Thus, you can trash it and do things another way if you prefer.
  */
 void
-enter_forked_process(struct trapframe *tf)
+enter_forked_process(void *data1, unsigned long data2)
 {
-	(void)tf;
+	KASSERT(data2 == 1);
+	
+	// allocate trapframe on new process' kernel stack
+	// instead of kernel heap
+	struct trapframe newtf = *((struct trapframe *)data1);
+	kfree(data1); // Now that the tf is on the kernel thread stack, remove it from the kernel heap
+
+	newtf.tf_epc += 4; // advance epc so that we don't repeat syscall
+	newtf.tf_a3 = 0; // indicate it was a successful fork
+	newtf.tf_v0 = 0; // return value of child should be 0, we're new to the world!
+
+	// the address space was not activated, do so now that curproc is the desired address space
+	as_activate();
+
+	mips_usermode(&newtf);
 }

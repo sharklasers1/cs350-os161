@@ -23,7 +23,7 @@ struct lock *procTableLock;
 void proctable_bootstrap(void);
 
 // Add process to table, associate it with its parent
-void proctable_add_process(struct proc *proc_created, struct proc *proc_parent);
+int proctable_add_process(struct proc *proc_created, struct proc *proc_parent);
 
 // Switch a process from running to exiting
 void proctable_exit_process(struct proc *proc_exited, int exitCode);

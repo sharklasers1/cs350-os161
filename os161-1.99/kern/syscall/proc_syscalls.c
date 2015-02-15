@@ -10,6 +10,7 @@
 #include <thread.h>
 #include <addrspace.h>
 #include <copyinout.h>
+#include <mips/trapframe.h>
 
   /* this implementation of sys__exit does not do anything with the exit code */
   /* this needs to be fixed to get exit() and waitpid() working properly */
@@ -122,5 +123,63 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
   }
   *retval = pid; // the return value of waitpid is always the PID of the process whose exit status goes in `status`, in OS161
   return(0);
+}
+
+int sys_fork(struct trapframe* tf, pid_t *retval) {
+  struct proc* proc_created = proc_create_runprogram("Forked process");
+  struct addrspace* as;
+  int result;
+
+  // could not create child due to memory constraints
+  if (proc_created == NULL) {
+    return ENOMEM;
+  }
+
+  // the parent needs to return the retval of the child
+  *retval = getPID(proc_created);
+
+  // allocate duplicate trapframe on kernel heap for child process
+  struct trapframe* dupTrap = kmalloc(sizeof(struct trapframe));
+
+  if (dupTrap == NULL) {
+    return ENOMEM;
+  }
+
+  memcpy(dupTrap, tf, sizeof(struct trapframe));
+  
+  // allocate duplicate address space for child process
+  as = as_create();
+
+  if (as == NULL) {
+    return ENOMEM;
+  }
+
+  // copy the address space of the parent process
+  result = as_copy(curproc_getas(), &as);
+  if (result) {
+    return result;
+  }
+  
+  // if successful, now set the new proc's address space
+  // to be the copied parent's.
+  proc_created->p_addrspace = as;
+
+  // we are now ready to create the child process using thread_fork
+  result = thread_fork("Forked thread", // name of thread
+                        proc_created, // process to attach thread to
+                        enter_forked_process, // entrypoint function
+                        (void *)dupTrap, // pass trapframe as data
+                        1 // pass in as number of args
+                      );
+
+  if (result) {
+    kfree(dupTrap);
+    return result;
+  }
+
+  // If there has been no error in thread_fork, then the child process is now running
+  // and could run before this code is executed
+
+  return 0;
 }
 

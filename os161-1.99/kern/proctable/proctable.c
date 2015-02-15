@@ -29,7 +29,7 @@ void proctable_bootstrap(void) {
 }
 
 // Add process to table
-void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
+int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
   KASSERT(procTableLock != NULL);
   KASSERT(proc_created != NULL);
   
@@ -41,6 +41,11 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
       procTable[i] = proc_created;
       break;
     }
+  }
+
+  // Check to see if a PID was available
+  if (getPID(proc_created) == PROC_NO_PID) {
+    return -1;
   }
 
   procCount++;
@@ -58,7 +63,7 @@ void proctable_add_process(struct proc *proc_created, struct proc *proc_parent) 
 
   DEBUG(DB_EXEC, "Finished adding to proctable\n");
 
-  return;
+  return 0;
 }
 
 // Switch a process from running to exited
