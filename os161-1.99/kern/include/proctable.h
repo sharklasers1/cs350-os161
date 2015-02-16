@@ -5,7 +5,7 @@
 #include <synch.h>
 
 // Consider changing to PID_MAX defined in LIMITS
-#define MAX_PID 512
+#define MAX_PID 256
 
 // Begins at 1 because in wait.h, PID 0 is defined in a special way for process groups.
 #define MIN_PID 1
