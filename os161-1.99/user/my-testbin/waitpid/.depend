@@ -1,6 +1,6 @@
 
-$(MYBUILDDIR)/waitpidfailure.o: \
- waitpidfailure.c \
+$(MYBUILDDIR)/waitpid.o: \
+ waitpid.c \
  $(INSTALLTOP)/include/unistd.h \
  $(INSTALLTOP)/include/sys/types.h \
  $(INSTALLTOP)/include/kern/types.h \

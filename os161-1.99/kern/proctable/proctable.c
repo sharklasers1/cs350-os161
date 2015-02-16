@@ -17,8 +17,6 @@ void proctable_bootstrap(void) {
 
   procTableLock = lock_create("proctableLock");
 
-  procCount = 0;
-
   if (procTableLock == NULL) {
     panic("could not create proctableLock");
   }
@@ -48,15 +46,13 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     return -1;
   }
 
-  procCount++;
-  
   DEBUG(DB_EXEC, "Found pid %d\n", proc_created->p_pid);
 
   if (proc_parent == NULL) {
     setPPID(proc_created, PROC_NO_PID);
   }
   else {
-    setPPID(proc_created, getPPID(proc_parent));
+    setPPID(proc_created, getPID(proc_parent));
   }
 
   setState(proc_created, PROC_RUNNING);
@@ -68,7 +64,7 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
 
 // Switch a process from running to exited
 void proctable_exit_process(struct proc *proc_exited, int exitcode) {
-  DEBUG(DB_EXEC, "Exiting from proctable\n");
+  DEBUG(DB_EXEC, "Exiting PID: %d from proctable\n", getPID(proc_exited));
 
   KASSERT(proc_exited != NULL);
   KASSERT(proc_exited->p_pid > 0);
@@ -110,25 +106,23 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
     cv_signal(proc_exited->wait_cv, procTableLock);
   }
 
-  DEBUG(DB_EXEC, "Finished exiting from proctable\n");
+  DEBUG(DB_EXEC, "Finished exiting PID: %d from proctable\n", exitedPID);
 }
 
 // Remove a process from the process table
 void proctable_remove_process(struct proc *proc_removed) {
-  DEBUG(DB_EXEC, "Removing from proctable\n");
+  DEBUG(DB_EXEC, "Removing PID: %d from proctable\n", getPID(proc_removed));
 
   KASSERT(proc_removed != NULL);
-  KASSERT(getPPID(proc_removed) == PROC_NO_PID);
 
   int pid = getPID(proc_removed);
   procTable[pid] = NULL;
-  procCount--;
 
   /* if this is the last user process in the system, proc_destroy()
      will wake up the kernel menu thread */
   proc_destroy(proc_removed);
 
-  DEBUG(DB_EXEC, "Finished removing from proctable\n");
+  DEBUG(DB_EXEC, "Finished removing PID: %d from proctable\n", pid);
 }
 
 // Return a process from the process table

@@ -88,8 +88,8 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
     else if (getPPID(child) != getPID(parent)) {
       result = ECHILD;
     }
-    // TODO figure out how to see if valid memory reference
-    else if (status == NULL) {
+    // TODO abstract this into an addrspace function
+    else if (status == NULL || (int)status < 0x7fff4000 || (int)status > 0x7fffffff) {
       result = EFAULT;
     }
 
@@ -99,27 +99,25 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
       return(result);
     }
     
-    // Otherwise, if waitpid call was valid, check to see if child has exited
-
+    // Otherwise, if waitpid call was valid, check to see if child has exited.
     // If child is still running, have parent wait for child to exit
     while (getState(child) == PROC_RUNNING) {
       cv_wait(child->wait_cv, procTableLock);
     }
 
-    // We are now awoken, or the child had already exited. Either way
-    // we can remove the child from the process table and return his exit code.
+    // We are now awoken because we waited for the child to exit,
+    // or the child had already exited. Either way, we can now collect
+    // their exit code. We will remove them from proctable when we exit.
     exitstatus = getExitcode(child);
-    // child is now a zombie, as its sole parent we can now kill it
-    proctable_remove_process(child);
 
   lock_release(procTableLock);
 
-  // if copyout succeeds, it returns 0, result keeps track of the success of copyout
-  result = copyout((void *)&exitstatus,status,sizeof(int)); // copy the existatus of the process from kernel address space to
+  // copy the existatus of the process from kernel address space to
   // user space, at the address of the user address `status` that was passed in for that purpose.
+  result = copyout((void *)&exitstatus,status,sizeof(int));
 
   if (result) {
-    return(result); // if copyout failed, return error
+    return(result);
   }
   *retval = pid; // the return value of waitpid is always the PID of the process whose exit status goes in `status`, in OS161
   return(0);

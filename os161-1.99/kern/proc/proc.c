@@ -173,12 +173,8 @@ proc_create(const char *name)
 	// Add newly created process to the process table.
 	// Don't acquire the lock if you're the first process, since threads for synchronization
 	// primitives have not been set up.
-	int err;
-	if (procCount == 0) {
-		err = proctable_add_process(proc, NULL);
-		initProc = proctable_get_process(MIN_PID);
-	}
-	else {
+	int err = 0;
+	if (kproc != NULL) {
 		lock_acquire(procTableLock);
 		err = proctable_add_process(proc, curproc);
 		lock_release(procTableLock);
