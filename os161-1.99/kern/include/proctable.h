@@ -3,17 +3,31 @@
 
 #include <proc.h>
 #include <synch.h>
+#include <limits.h>
+#include <array.h>
 
 // Consider changing to PID_MAX defined in LIMITS
 #define MAX_PID 256
 
-// Begins at 1 because in wait.h, PID 0 is defined in a special way for process groups.
+// Begins at 1 because in wait.h, PID 0 is defined in a special way for process groups
+// 1 is reserved for the kernel process.
 #define MIN_PID 1
 
+/*
+ * Array of processes.
+ */
+#ifndef PROCINLINE
+#define PROCINLINE INLINE
+#endif
+
+DECLARRAY(proc);
+DEFARRAY(proc, PROCINLINE);
+
 int procCount;
+int pidLimit;
 
 // procTable to hold all processes
-struct proc **procTable;
+struct procarray *procTable;
 
 // lock to shield critical sections, such as when a parent calls wait as child calls exit
 struct lock *procTableLock;

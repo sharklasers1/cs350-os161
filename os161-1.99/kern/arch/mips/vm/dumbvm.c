@@ -59,6 +59,11 @@ vm_bootstrap(void)
 	/* Do nothing. */
 }
 
+int as_stack_valid(int location) {
+	int result = location >= 0x7fff4000 && location <= 0x7fffffff;
+	return result;
+}
+
 static
 paddr_t
 getppages(unsigned long npages)

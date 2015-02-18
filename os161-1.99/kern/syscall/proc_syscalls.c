@@ -38,7 +38,7 @@ void sys__exit(int exitcode) {
   /* note: curproc cannot be used after this call */
   proc_remthread(curthread);
 
-  // Have process exit
+  // Ensure synchronization in case another process is trying to getpid()
   lock_acquire(procTableLock);
     proctable_exit_process(p, exitcode);
   lock_release(procTableLock);
@@ -48,19 +48,15 @@ void sys__exit(int exitcode) {
   panic("return from thread_exit in sys_exit\n");
 }
 
-
-/* stub handler for getpid() system call                */
 int
 sys_getpid(pid_t *retval)
 {
+  KASSERT(curproc != NULL);
+
   struct proc *p = curproc;
-  /* for now, this is just a stub that always returns a PID of 1 */
-  /* you need to fix this to make it work properly */
   *retval = getPID(p);
   return(0);
 }
-
-/* stub handler for waitpid() system call                */
 
 int
 sys_waitpid(pid_t pid, // pid that you want to wait for
@@ -68,7 +64,6 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
 	    int options, // number of options
 	    pid_t *retval) // return value for waitpid, if success should be pid of process waitee.
 {
-  /* for now, just pretend the result, exitstatus are each 0 */
   int exitstatus = 0;
   int result = 0;
 
@@ -88,8 +83,8 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
     else if (getPPID(child) != getPID(parent)) {
       result = ECHILD;
     }
-    // TODO abstract this into an addrspace function
-    else if (status == NULL || (int)status < 0x7fff4000 || (int)status > 0x7fffffff) {
+
+    else if (status == NULL || !as_stack_valid((int)status)) {
       result = EFAULT;
     }
 
@@ -121,7 +116,10 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
   if (result) {
     return(result);
   }
-  *retval = pid; // the return value of waitpid is always the PID of the process whose exit status goes in `status`, in OS161
+
+  // the return value of waitpid is always the PID of the process
+  // whose exit status goes in `status`, in OS161
+  *retval = pid;
   return(0);
 }
 
@@ -136,6 +134,8 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
   }
 
   // the parent needs to return the retval of the child
+  // synchronization is not required since the only one interested
+  // in the child process is the parent and we are the parent
   *retval = getPID(proc_created);
 
   // allocate duplicate trapframe on kernel heap for child process

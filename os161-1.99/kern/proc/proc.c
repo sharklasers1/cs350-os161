@@ -174,9 +174,22 @@ proc_create(const char *name)
 	// Don't acquire the lock if you're the first process, since threads for synchronization
 	// primitives have not been set up.
 	int err = 0;
-	if (kproc != NULL) {
+
+	if (kproc == NULL) {
+		err = proctable_add_process(proc, NULL);
+	}
+
+	else {
 		lock_acquire(procTableLock);
-		err = proctable_add_process(proc, curproc);
+		// since the kernel process is never destroyed, don't
+		// attach children to it
+		if (curproc == kproc) {
+			err = proctable_add_process(proc, NULL);
+		}
+
+		else {
+			err = proctable_add_process(proc, curproc);
+		}
 		lock_release(procTableLock);
 	}
 
