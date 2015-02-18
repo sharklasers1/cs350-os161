@@ -41,11 +41,9 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
   KASSERT(procTableLock != NULL);
   KASSERT(proc_created != NULL);
   
-  DEBUG(DB_EXEC, "Adding to proctable\n");
-
   // Grow the proctable as more processes come in
+  // -1 because the 0 pid is left empty
   if (procCount == pidLimit - 1) {
-    DEBUG(DB_EXEC, "expanding pidLimit\n");
     if (pidLimit < MAX_PID) {
       pidLimit = pidLimit * 2;
       procarray_setsize(procTable, pidLimit);
@@ -77,7 +75,7 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     setPPID(proc_created, PROC_NO_PID);
   }
   else {
-    setPPID(proc_created, getPPID(proc_parent));
+    setPPID(proc_created, getPID(proc_parent));
   }
 
   setState(proc_created, PROC_RUNNING);
@@ -140,7 +138,6 @@ void proctable_remove_process(struct proc *proc_removed) {
   DEBUG(DB_EXEC, "Removing PID: %d from proctable\n", getPID(proc_removed));
 
   KASSERT(proc_removed != NULL);
-  KASSERT(getPPID(proc_removed) == PROC_NO_PID);
 
   int pid = getPID(proc_removed);
   procarray_set(procTable, pid, NULL);
