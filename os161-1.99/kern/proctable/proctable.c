@@ -4,9 +4,10 @@
 
 #define PROCINLINE
 #include <proctable.h>
+
 /*
  * Each index of the global proctable represents a PID that can be used to lookup a desired process.
- * 
+ * The proctable is responsible for managing all PIDs in the system.
  */
 
 // Call once during system startup to allocate data structures.
@@ -22,7 +23,6 @@ void proctable_bootstrap(void) {
   
   procarray_setsize(procTable, pidLimit);
 
-
   procTableLock = lock_create("proctableLock");
 
   procCount = 0;
@@ -37,12 +37,15 @@ void proctable_bootstrap(void) {
 }
 
 // Add process to table
+// @proc_created is the newly created process
+// @proc_parent is the process that created it and must be assigned as its parent
+
 int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
   KASSERT(procTableLock != NULL);
   KASSERT(proc_created != NULL);
   
-  // Grow the proctable as more processes come in
-  // -1 because the 0 pid is left empty
+  // Grow the proctable as more processes come in.
+  // Subtract 1 for zero-indexing.
   if (procCount == pidLimit - 1) {
     if (pidLimit < MAX_PID) {
       pidLimit = pidLimit * 2;
@@ -53,6 +56,7 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     }
   }
 
+  // Assign a PID to the new process
   for (int i = MIN_PID; i < pidLimit; i++) {
     if (procarray_get(procTable, i) == NULL) {
       setPID(proc_created, i);
@@ -66,11 +70,10 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     return -1;
   }
 
+  // Increase the count of processes in the procTable
   procCount++;
-  DEBUG(DB_EXEC, "procCount: %d", procCount);
-  
-  DEBUG(DB_EXEC, "Found pid %d\n", proc_created->p_pid);
 
+  // Assign the process' parent PID
   if (proc_parent == NULL) {
     setPPID(proc_created, PROC_NO_PID);
   }
@@ -78,34 +81,41 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     setPPID(proc_created, getPID(proc_parent));
   }
 
+  // Finally, set the state of the proces to running
   setState(proc_created, PROC_RUNNING);
-
-  DEBUG(DB_EXEC, "Finished adding to proctable\n");
 
   return 0;
 }
 
-// Switch a process from running to exited
+// Switch a process from running state to exited state.
+// The PID of the process remains in the table until its parent,
+// the only interested party, also exits.
+// @proc_exited is the process that has finished
+// @exitcode is the exitcode the process finished with
+
 void proctable_exit_process(struct proc *proc_exited, int exitcode) {
   DEBUG(DB_EXEC, "Exiting PID: %d from proctable\n", getPID(proc_exited));
 
   KASSERT(proc_exited != NULL);
   KASSERT(proc_exited->p_pid > 0);
 
+  // set the process state to exited
   setState(proc_exited, PROC_EXITED);
 
   // encode the exit code as per the docs.
   setExitcode(proc_exited, _MKWAIT_EXIT(exitcode));
 
-  // If proc_exited has living children, they should now have a NULL parent
-  // If proc_exited has dead children, they should now be destroyed
+  // Next we need to evaluate some cases:
+  // If proc_exited has living children, they should now have a NULL parent.
+  // If proc_exited has dead children, they should now be destroyed.
 
   int exitedPID = getPID(proc_exited);
 
+  // Find the children of proc_exited.
   for (int i = MIN_PID; i < pidLimit; i++) {
     struct proc* cur = procarray_get(procTable, i);
     if (cur != NULL && getPPID(cur) == exitedPID) {
-      // Check state of children
+      // Check state of child
       int state = getState(cur);
       
       // A running child has its parent set to NULL
@@ -113,7 +123,7 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
         setPPID(cur, PROC_NO_PID);
       }
 
-      // An exited child can now be destroyed
+      // An exited child can now be completely removed.
       else if (state == PROC_EXITED) {
         proctable_remove_process(cur);
       }
@@ -125,18 +135,20 @@ void proctable_exit_process(struct proc *proc_exited, int exitcode) {
     proctable_remove_process(proc_exited);
   }
 
-  // Otherwise if proc_exited has a parent, proc_exited must wake its potentially waiting parent
+  // Otherwise if proc_exited has a parent
+  // then proc_exited must wake its potentially waiting parent
   else {
     cv_signal(proc_exited->wait_cv, procTableLock);
   }
-
-  DEBUG(DB_EXEC, "Finished exiting PID: %d from proctable\n", exitedPID);
 }
 
-// Remove a process from the process table
-void proctable_remove_process(struct proc *proc_removed) {
-  DEBUG(DB_EXEC, "Removing PID: %d from proctable\n", getPID(proc_removed));
+// Remove a process from the process table. This frees the
+// PID to be used by another process and destroys all remaining
+// information about the process, including any reference to its
+// exitcode.
+// @proc_removed is the process to be removed from the table.
 
+void proctable_remove_process(struct proc *proc_removed) {
   KASSERT(proc_removed != NULL);
 
   int pid = getPID(proc_removed);
@@ -146,11 +158,11 @@ void proctable_remove_process(struct proc *proc_removed) {
   /* if this is the last user process in the system, proc_destroy()
      will wake up the kernel menu thread */
   proc_destroy(proc_removed);
-
-  DEBUG(DB_EXEC, "Finished removing PID: %d from proctable\n", pid);
 }
 
 // Return a process from the process table
+// @pid is the PID of the process to be retrieved
+
 struct proc* proctable_get_process(pid_t pid) {
   if (pid < MIN_PID || pid > MAX_PID) {
     return NULL;

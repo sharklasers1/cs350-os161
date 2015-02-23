@@ -12,9 +12,6 @@
 #include <copyinout.h>
 #include <mips/trapframe.h>
 
-  /* this implementation of sys__exit does not do anything with the exit code */
-  /* this needs to be fixed to get exit() and waitpid() working properly */
-
 void sys__exit(int exitcode) {
 
   struct addrspace *as;
@@ -39,6 +36,7 @@ void sys__exit(int exitcode) {
   proc_remthread(curthread);
 
   // Ensure synchronization in case another process is trying to getpid()
+  // and inform the proctable that the process is exiting.
   lock_acquire(procTableLock);
     proctable_exit_process(p, exitcode);
   lock_release(procTableLock);
@@ -54,6 +52,8 @@ sys_getpid(pid_t *retval)
   KASSERT(curproc != NULL);
 
   struct proc *p = curproc;
+
+  // return the current process' PID.
   *retval = getPID(p);
   return(0);
 }
@@ -161,7 +161,8 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
   }
   
   // if successful, now set the new proc's address space
-  // to be the copied parent's.
+  // to be the copied parent's. We don't need any synchronization to do this
+  // because only the parent knows about this child and it is not yet running
   proc_created->p_addrspace = as;
 
   // we are now ready to create the child process using thread_fork

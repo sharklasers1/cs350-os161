@@ -1,6 +1,6 @@
 #!/bin/bash
-for i in {1..10}
+for i in {1..100}
 	do
-    sys161 kernel "sp2 $1 $2 $3 $4 1 1 1 1;q"
+    sys161 kernel "p uw-testbin/onefork;q"
 done
 echo "All tests concluded successfully."
