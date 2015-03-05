@@ -186,16 +186,17 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
   return 0;
 }
 
-int sys_execv(const char *program, char **args) {
+int sys_execv(userptr_t program, char** args) {
   int result;
-
+  kprintf("%s here", args[0]);
+  kprintf("%d here \n", sizeof(userptr_t));
+  kprintf("%d here", sizeof(char*));
   char progname[128];
 
   /* Hope we fit. */
-  KASSERT(strlen(program) < sizeof(progname));
+  KASSERT(strlen((char*)program) < sizeof(progname));
 
-
-  strcpy(progname, program);
+  strcpy(progname, (char*)program);
 
   // Save new and old address space
   struct addrspace *oldas;
@@ -204,6 +205,69 @@ int sys_execv(const char *program, char **args) {
 
   // entrypoint and location of stack for new program we're running
   vaddr_t entrypoint, stackptr;
+
+  /////////////////////////////////////////////
+  // Args
+  /////////////////////////////////////////////
+
+  // Count of the number of args copied in.
+  size_t nargs = 0;
+
+  // Offset into string buffer
+  size_t strOffset = 0;
+
+  // Current user pointer.
+  userptr_t curarg;
+
+  // Track start and end of string data
+  char* strbuf = kmalloc(ARG_MAX);
+  size_t strlen = 0;
+
+  // Track start and end of pointers
+  size_t* argv = kmalloc(sizeof(size_t) * ARG_MAX);
+
+  // Args array is terminated by a NULL pointer.
+  while(1) {
+    // Copyin next pointer
+    kprintf("%s here\n", args[0]);
+    result = copyin((userptr_t)args, &curarg, sizeof(userptr_t));
+
+    // If copyin of each pointer in args fails, return.
+    if (result) {
+      return result;
+    }
+
+    // The argument array is NULL terminated.
+    if (curarg == NULL) {
+      break;
+    }
+
+    // If this new arg puts us at the total, return
+    // too many args.
+    if (nargs == ARG_MAX) {
+      return E2BIG;
+    }
+
+    // Copy in the string for the pointer
+    result = copyinstr(curarg, strbuf + strOffset, ARG_MAX - strOffset, &strlen);
+    if (result) {
+      return result;
+    }
+
+    // We have successfully copied the string in, now do the bookkeeping
+    argv[nargs] = strOffset; // set the offset for the pointer to its string
+    strOffset += strlen; // decrease remaining character limit
+    nargs++; // increment number of arguments
+    args++; // increment argument being looked at
+  }
+
+  // Set the NULL argv to NULL
+  argv[nargs] = 0;
+
+  /////////////////////////////////////////////
+  // Args
+  /////////////////////////////////////////////
+
 
   /* Open the file. */
   result = vfs_open(progname, O_RDONLY, 0, &v);
@@ -247,72 +311,23 @@ int sys_execv(const char *program, char **args) {
   // Args
   /////////////////////////////////////////////
 
-  // Count of the number of args copied in.
-  size_t nargs = 0;
-
-  // Offset into string buffer
-  size_t strOffset = 0;
-
-  // Current user pointer.
-  userptr_t curarg;
-
-  // Track start and end of string data
-  char* strbuf = kmalloc(ARG_MAX);
-  size_t strlen = 0;
-
-  // Track start and end of pointers
-  size_t* argv = kmalloc(sizeof(size_t) * ARG_MAX);
-
-  // Args array is terminated by a NULL pointer.
-  while(1) {
-    // Copyin next pointer
-    result = copyin((userptr_t)args[nargs], &curarg, sizeof(userptr_t));
-
-    // If copyin of each pointer in args fails, return.
-    if (result) {
-      return result;
-    }
-
-    // The argument array is NULL terminated.
-    if (curarg == NULL) {
-      break;
-    }
-
-    // If this new arg puts us at the total, return
-    // too many args.
-    if (nargs == ARG_MAX) {
-      return E2BIG;
-    }
-
-    // Copy in the string for the pointer
-    result = copyinstr(curarg, strbuf + strOffset, ARG_MAX - strOffset, &strlen);
-    if (result) {
-      return result;
-    }
-
-    // We have successfully copied the string in, now do the bookkeeping
-    argv[nargs] = strOffset; // set the offset for the pointer to its string
-    strOffset += strlen; // decrease remaining character limit
-    nargs++; // increment number of arguments
-    args += sizeof(userptr_t); // increment argument being looked at
-  }
-
   // figure out how much padding we need at the end to word align
   while(strOffset % 4) {
     strOffset++;
     strbuf[strOffset - 1] = 0;
   }
 
-  // Adjust the argument pointers to new location on stack
-  for (size_t i = 0; i < nargs; i++) {
-    argv[nargs] += stackptr;
-  }
 
   // Now put argv and strbuf on the user stack
 
   // Make room on the stack for the data
   // by subtracting number of characters
   stackptr -= strOffset;
+
+  // Adjust the argument pointers to new location on stack
+  for (size_t i = 0; i < nargs; i++) {
+    argv[i] += stackptr;
+  }
 
   // Copy out string data onto user stack
   result = copyout(strbuf, (userptr_t)stackptr, strOffset);
@@ -321,20 +336,23 @@ int sys_execv(const char *program, char **args) {
   }
 
   // Make room on stack for the arguments by subtracting
-  // number of arguments
-  stackptr -= nargs * sizeof(userptr_t);
+  // number of arguments. Add one for copying out NULL
+  stackptr -= (nargs + 1) * sizeof(userptr_t);
 
   // Copy out arguments onto user stack
-  result = copyout(argv, (userptr_t)stackptr, nargs * sizeof(userptr_t));
+  result = copyout(argv, (userptr_t)stackptr, (nargs + 1) * sizeof(userptr_t));
+
+  kfree(strbuf);
+  kfree(argv);
   /////////////////////////////////////////////
   // Args
   /////////////////////////////////////////////
 
   // Now that everything has succeeded, we can free the old user address space memory
-  as_destroy(oldas);
+  // as_destroy(oldas);
 
   /* Warp to user mode. */
-  enter_new_process(0 /*argc*/, (userptr_t)(stackptr) /*userspace addr of argv*/,
+  enter_new_process(nargs, (userptr_t)(stackptr) /*userspace addr of argv*/,
         stackptr, entrypoint);
   
   /* enter_new_process does not return. */
