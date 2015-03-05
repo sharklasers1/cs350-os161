@@ -151,7 +151,8 @@ proc_create(const char *name)
 
 	proc->wait_cv = cv_create("procCV");
 	if (proc->wait_cv == NULL) {
-		panic("could not create proc CV");
+		kfree(proc);
+		return NULL;
 	}
 
 	threadarray_init(&proc->p_threads);

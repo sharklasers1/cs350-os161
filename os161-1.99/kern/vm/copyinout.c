@@ -258,7 +258,7 @@ copystr(char *dest, const char *src, size_t maxlen, size_t stoplen,
  * copyinstr
  *
  * Copy a string from user-level address USERSRC to kernel address
- * DEST, as per copystr above. Uses the tm_badfaultfunc/copyfail
+ * DEST, as per copystr above. Provide a max length and a address that receives the actual length. Uses the tm_badfaultfunc/copyfail
  * logic to protect against invalid addresses supplied by a user
  * process.
  */
