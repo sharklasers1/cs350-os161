@@ -53,7 +53,7 @@
  * Calls vfs_open on progname and thus may destroy it.
  */
 int
-runprogram(char *progname, userptr_t args, size_t nargs)
+runprogram(char *progname, char** args, size_t nargs)
 {
 	struct addrspace *as;
 	struct vnode *v;
@@ -105,15 +105,16 @@ runprogram(char *progname, userptr_t args, size_t nargs)
   struct argscopy* argscopy = argscopy_create();
 
   // Subtract one from the arguments passed to the program
-  // since the first one is the name of the program
+  // and increment args by one char* since the first
+  // one is the name of the program
   nargs--;
-  argscopy->nargs = nargs;
+  args++;
 
   if (argscopy == NULL) {
     return ENOMEM;
   }
 
-  result = copyinargs(args+sizeof(userptr_t), argscopy, 1);
+  result = copyargs(args, argscopy, nargs);
 
   if (result) {
     argscopy_destroy(argscopy);

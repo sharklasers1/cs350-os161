@@ -77,7 +77,8 @@ struct argscopy {
 };
 
 // All the argument copying equipment
-int copyinargs(userptr_t args, struct argscopy* argscopy, int kernflag);
+int copyargs(char** args, struct argscopy *argscopy, size_t nargs);
+int copyinargs(userptr_t args, struct argscopy* argscopy);
 int copyoutargs(struct argscopy* argscopy, vaddr_t* stackptr);
 struct argscopy* argscopy_create(void);
 void argscopy_destroy(struct argscopy* argscopy);
