@@ -45,12 +45,14 @@
 int
 main(int argc, char** argv)
 {
-  printf("yo yo yo\n");
   printf("%s\n", argv[0]);
-  printf("%s", argv[1]);
-  printf("%s", argv[argc]);
-  (void)argc;
-  (void)argv;
+  printf("%s\n", argv[1]);
+  if (argv[argc] == NULL) {
+    printf("Terminated by null\n");
+  }
+  else {
+    printf("NOT TERMINATED BY NULL, RUH-OH.");
+  }
   volatile int i;
   for (i=0; i<50000; i++)
     ;

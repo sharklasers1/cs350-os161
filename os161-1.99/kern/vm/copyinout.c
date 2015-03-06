@@ -35,6 +35,7 @@
 #include <current.h>
 #include <vm.h>
 #include <copyinout.h>
+#include <limits.h>
 
 /*
  * User/kernel memory copying functions.
@@ -318,4 +319,168 @@ copyoutstr(const char *src, userptr_t userdest, size_t len, size_t *actual)
 
 	curthread->t_machdep.tm_badfaultfunc = NULL;
 	return result;
+}
+
+/*
+ * copyinargs
+ *
+ * Copy user args into kernel.
+ */
+int copyinargs(userptr_t args, struct argscopy* argscopy) {
+
+  // Size of the current char* argument in bytes
+  size_t strlen = 0;
+
+  int result;
+
+  // Current argument brought into kernel
+  // from user space args.
+  userptr_t curarg;
+
+  while(1) {
+    // Copy the first char* pointer into the kernel.
+    // Each pointer is a char* that shares the same address as its
+    // first element. Here we get each char* from the char** array argv.
+    result = copyin(args, &curarg, sizeof(userptr_t));
+
+    // If copyin of each pointer in args fails, return.
+    if (result) {
+      return result;
+    }
+
+    // The arguments should be NULL terminated.
+    // Set last argument to NULL, since
+    // space is allocated for NULL argument.
+    if (curarg == NULL) {
+      argscopy->argv[argscopy->nargs] = 0;
+      break;
+    }
+
+    // The data for the char* begins at its address, each byte being a char
+    // up until the terminator. Copy all of this data into the kernel.
+    // The remaining size allowable for the argument strings is ARG_MAX - stroffset,
+    // if this limit is exceeded, return error.
+    result = copyinstr(curarg, argscopy->strbuf + argscopy->stroffset, ARG_MAX - argscopy->stroffset, &strlen);
+    if (result == ENAMETOOLONG) {
+      return E2BIG;
+    }
+    else if (result) {
+      return result;
+    }
+
+    // We have successfully copied the string in, now do the bookkeeping
+    argscopy->argv[argscopy->nargs] = argscopy->stroffset; // set the offset for the pointer to its string
+    argscopy->stroffset += strlen; // decrease remaining character limit
+    argscopy->nargs++; // increment number of arguments
+    args += sizeof(userptr_t); // increment argument being looked at
+  }
+
+  // Word alignment requires that 4-byte items like character pointers
+  // start word-aligned at an address divisible by 4.
+  // Meanwhile stack pointer requires that it start at an address divisible by 8,
+  // since 8-bytes is the largest data type that could be pushed on the stack.
+
+  // Given the larger constraint of 8-bytes, ensure the stackpointer and consequently
+  // the argv, since they point to the same place, starts at an address divisible by 8.
+
+  // Get the total number of bytes we'll be putting on the stack and align it.
+  // Add one for the null terminator.
+  while(((argscopy->nargs + 1) * sizeof(userptr_t) + argscopy->stroffset) % 8) {
+    argscopy->stroffset++;
+    argscopy->strbuf[argscopy->stroffset - 1] = 0;
+  }
+
+  return 0;
+ }
+
+ /*
+ * copyoutargs
+ *
+ * Copy user args from kernel to new user space.
+ */
+int copyoutargs(struct argscopy* argscopy, vaddr_t* stackptr) {
+	// Put argv and strbuf on the user stack
+
+	// Make room on the stack for the data
+	// by subtracting number of characters
+	*stackptr -= argscopy->stroffset;
+
+	int result;
+
+	// Adjust the argument pointers to new location on stack.
+	for (size_t i = 0; i < argscopy->nargs; i++) {
+	  argscopy->argv[i] += *stackptr;
+	}
+
+	// Copy out string data onto user stack
+	result = copyout(argscopy->strbuf, (userptr_t)*stackptr, argscopy->stroffset);
+
+	if (result) {
+	  return result;
+	}
+
+	// Make room on stack for the arguments by subtracting
+	// number of arguments. Add 1 for the null terminator.
+	*stackptr -= (argscopy->nargs + 1) * sizeof(userptr_t);
+
+	// Copy out arguments onto user stack, again adding one
+	// for the null terminator.
+	result = copyout(argscopy->argv, (userptr_t)(*stackptr), (argscopy->nargs + 1) * sizeof(userptr_t));
+
+	if (result) {
+		return result;
+	}
+
+	return 0;
+}
+
+/*
+* argscopy_create
+*
+* Create new argscopy struct
+*/
+struct argscopy* argscopy_create() {
+	struct argscopy* argscopy = kmalloc(sizeof(struct argscopy));
+
+	if (argscopy == NULL) {
+		return NULL;
+	}
+
+	// Count of the number of args copied in.
+  argscopy->nargs = 0;
+
+  // Offset into string buffer
+  argscopy->stroffset = 0;
+
+  // Track start and end of string data
+  argscopy->strbuf = kmalloc(ARG_MAX);
+
+  if (argscopy->strbuf == NULL) {
+  	kfree(argscopy);
+  	return NULL;
+  }
+
+  // Track start and end of pointers
+  argscopy->argv = kmalloc(sizeof(size_t) * ARG_MAX);
+
+  if (argscopy->argv == NULL) {
+  	kfree(argscopy->strbuf);
+  	kfree(argscopy);
+  	return NULL;
+  }
+
+  return argscopy;
+}
+
+/*
+* argscopy_destroy
+*
+* Destroy argscopy struct
+*/
+void argscopy_destroy(struct argscopy* argscopy) {
+	KASSERT(argscopy != NULL);
+
+	kfree(argscopy->argv);
+	kfree(argscopy->strbuf);
+	kfree(argscopy);
 }

@@ -85,6 +85,7 @@ int
 main()
 {
   hog();
+  hog();
 
   waitall();
   return 0;

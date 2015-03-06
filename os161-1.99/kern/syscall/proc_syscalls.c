@@ -86,10 +86,6 @@ sys_waitpid(pid_t pid, // pid that you want to wait for
       result = ECHILD;
     }
 
-    else if (status == NULL || !as_stack_valid((int)status)) {
-      result = EFAULT;
-    }
-
     // If any of the above errors were set, return error
     if (result) {
       lock_release(procTableLock);
@@ -186,17 +182,14 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
   return 0;
 }
 
-int sys_execv(userptr_t program, char** args) {
+int sys_execv(char* program, userptr_t args) {
+
+  // Ensure that we were given a valid program name.
+  if (program == NULL) {
+    return EFAULT;
+  }
+
   int result;
-  kprintf("%s here", args[0]);
-  kprintf("%d here \n", sizeof(userptr_t));
-  kprintf("%d here", sizeof(char*));
-  char progname[128];
-
-  /* Hope we fit. */
-  KASSERT(strlen((char*)program) < sizeof(progname));
-
-  strcpy(progname, (char*)program);
 
   // Save new and old address space
   struct addrspace *oldas;
@@ -207,77 +200,37 @@ int sys_execv(userptr_t program, char** args) {
   vaddr_t entrypoint, stackptr;
 
   /////////////////////////////////////////////
-  // Args
+  // Copy in arguments from user space to the kernel
   /////////////////////////////////////////////
 
-  // Count of the number of args copied in.
-  size_t nargs = 0;
+  struct argscopy* argscopy = argscopy_create();
 
-  // Offset into string buffer
-  size_t strOffset = 0;
-
-  // Current user pointer.
-  userptr_t curarg;
-
-  // Track start and end of string data
-  char* strbuf = kmalloc(ARG_MAX);
-  size_t strlen = 0;
-
-  // Track start and end of pointers
-  size_t* argv = kmalloc(sizeof(size_t) * ARG_MAX);
-
-  // Args array is terminated by a NULL pointer.
-  while(1) {
-    // Copyin next pointer
-    kprintf("%s here\n", args[0]);
-    result = copyin((userptr_t)args, &curarg, sizeof(userptr_t));
-
-    // If copyin of each pointer in args fails, return.
-    if (result) {
-      return result;
-    }
-
-    // The argument array is NULL terminated.
-    if (curarg == NULL) {
-      break;
-    }
-
-    // If this new arg puts us at the total, return
-    // too many args.
-    if (nargs == ARG_MAX) {
-      return E2BIG;
-    }
-
-    // Copy in the string for the pointer
-    result = copyinstr(curarg, strbuf + strOffset, ARG_MAX - strOffset, &strlen);
-    if (result) {
-      return result;
-    }
-
-    // We have successfully copied the string in, now do the bookkeeping
-    argv[nargs] = strOffset; // set the offset for the pointer to its string
-    strOffset += strlen; // decrease remaining character limit
-    nargs++; // increment number of arguments
-    args++; // increment argument being looked at
+  if (argscopy == NULL) {
+    return ENOMEM;
   }
 
-  // Set the NULL argv to NULL
-  argv[nargs] = 0;
+  result = copyinargs(args, argscopy);
 
-  /////////////////////////////////////////////
-  // Args
-  /////////////////////////////////////////////
-
+  if (result) {
+    argscopy_destroy(argscopy);
+    return result;
+  }
 
   /* Open the file. */
+  char *progname;
+  progname = kstrdup(program);
   result = vfs_open(progname, O_RDONLY, 0, &v);
+  kfree(progname);
+
   if (result) {
+    argscopy_destroy(argscopy);
     return result;
   }
 
   // Create the new user address space memory
   newas = as_create();
   if (newas == NULL) {
+    argscopy_destroy(argscopy);
     vfs_close(v);
     return ENOMEM;
   }
@@ -291,6 +244,7 @@ int sys_execv(userptr_t program, char** args) {
   if (result) {
     /* p_addrspace will go away when curproc is destroyed */
     vfs_close(v);
+    argscopy_destroy(argscopy);
     // Restore old address space since there was an error
     curproc_setas(oldas);
     return result;
@@ -302,54 +256,30 @@ int sys_execv(userptr_t program, char** args) {
   /* Define the user stack in the address space */
   result = as_define_stack(newas, &stackptr);
   if (result) {
+    argscopy_destroy(argscopy);
     // Restore old address space since there was an error
     curproc_setas(oldas);
     return result;
   }
 
   /////////////////////////////////////////////
-  // Args
+  // Copy out arguments from kernel to new user space
   /////////////////////////////////////////////
 
-  // figure out how much padding we need at the end to word align
-  while(strOffset % 4) {
-    strOffset++;
-    strbuf[strOffset - 1] = 0;
-  }
+  result = copyoutargs(argscopy, &stackptr);
 
-
-  // Now put argv and strbuf on the user stack
-
-  // Make room on the stack for the data
-  // by subtracting number of characters
-  stackptr -= strOffset;
-
-  // Adjust the argument pointers to new location on stack
-  for (size_t i = 0; i < nargs; i++) {
-    argv[i] += stackptr;
-  }
-
-  // Copy out string data onto user stack
-  result = copyout(strbuf, (userptr_t)stackptr, strOffset);
   if (result) {
+    argscopy_destroy(argscopy);
+    // Make sure to restore the oldas on failure.
+    curproc_setas(oldas);
     return result;
   }
 
-  // Make room on stack for the arguments by subtracting
-  // number of arguments. Add one for copying out NULL
-  stackptr -= (nargs + 1) * sizeof(userptr_t);
-
-  // Copy out arguments onto user stack
-  result = copyout(argv, (userptr_t)stackptr, (nargs + 1) * sizeof(userptr_t));
-
-  kfree(strbuf);
-  kfree(argv);
-  /////////////////////////////////////////////
-  // Args
-  /////////////////////////////////////////////
-
   // Now that everything has succeeded, we can free the old user address space memory
-  // as_destroy(oldas);
+  // and the argscopy
+  int nargs = argscopy->nargs;
+  argscopy_destroy(argscopy);
+  as_destroy(oldas);
 
   /* Warp to user mode. */
   enter_new_process(nargs, (userptr_t)(stackptr) /*userspace addr of argv*/,
@@ -357,5 +287,6 @@ int sys_execv(userptr_t program, char** args) {
   
   /* enter_new_process does not return. */
   panic("enter_new_process returned\n");
+
   return EINVAL;
 }
