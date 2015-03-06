@@ -44,6 +44,7 @@
 #include <vfs.h>
 #include <syscall.h>
 #include <test.h>
+#include <copyinout.h>
 
 /*
  * Load program "progname" and start running it in usermode.
@@ -52,7 +53,7 @@
  * Calls vfs_open on progname and thus may destroy it.
  */
 int
-runprogram(char *progname)
+runprogram(char *progname, userptr_t args, size_t nargs)
 {
 	struct addrspace *as;
 	struct vnode *v;
@@ -97,8 +98,41 @@ runprogram(char *progname)
 		return result;
 	}
 
+	/////////////////////////////////////////////
+  // Copy in arguments from user space to the kernel
+  /////////////////////////////////////////////
+
+
+  struct argscopy* argscopy = argscopy_create();
+
+  // Subtract one from the arguments passed to the program
+  // since the first one is the name of the program
+  nargs--;
+  argscopy->nargs = nargs;
+
+  if (argscopy == NULL) {
+    return ENOMEM;
+  }
+
+  result = copyinargs(args+sizeof(userptr_t), argscopy, 1);
+
+  if (result) {
+    argscopy_destroy(argscopy);
+    return result;
+  }
+
+  result = copyoutargs(argscopy, &stackptr);
+
+  if (result) {
+    argscopy_destroy(argscopy);
+    return result;
+  }
+
+  // Now that everything has succeeded, we can free the argscopy
+  argscopy_destroy(argscopy);
+
 	/* Warp to user mode. */
-	enter_new_process(0 /*argc*/, NULL /*userspace addr of argv*/,
+	enter_new_process(nargs /*argc*/, (userptr_t)(stackptr) /*userspace addr of argv*/,
 			  stackptr, entrypoint);
 	
 	/* enter_new_process does not return. */

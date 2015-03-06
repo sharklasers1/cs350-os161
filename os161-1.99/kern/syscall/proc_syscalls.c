@@ -209,7 +209,7 @@ int sys_execv(char* program, userptr_t args) {
     return ENOMEM;
   }
 
-  result = copyinargs(args, argscopy);
+  result = copyinargs(args, argscopy, 0);
 
   if (result) {
     argscopy_destroy(argscopy);

@@ -326,41 +326,62 @@ copyoutstr(const char *src, userptr_t userdest, size_t len, size_t *actual)
  *
  * Copy user args into kernel.
  */
-int copyinargs(userptr_t args, struct argscopy* argscopy) {
+int copyinargs(userptr_t args, struct argscopy* argscopy, int kernflag) {
 
   // Size of the current char* argument in bytes
   size_t strlen = 0;
+  size_t maxlen = ARG_MAX;
 
   int result;
+
+  // If there are Kernel args, grab them and reset nargs
+  size_t knargs = argscopy->nargs;
+  argscopy->nargs = 0;
+
 
   // Current argument brought into kernel
   // from user space args.
   userptr_t curarg;
 
   while(1) {
-    // Copy the first char* pointer into the kernel.
-    // Each pointer is a char* that shares the same address as its
-    // first element. Here we get each char* from the char** array argv.
-    result = copyin(args, &curarg, sizeof(userptr_t));
 
-    // If copyin of each pointer in args fails, return.
-    if (result) {
-      return result;
+    // Check to see if this is a kernel args copy or a user args copy
+    // A user args copy requires the added step of bringing in data from user land.
+    if (kernflag) {
+      memcpy((void*)&curarg, (const void *)args, sizeof(userptr_t));
+
+      if (!knargs) {
+        argscopy->argv[argscopy->nargs] = 0;
+        break;
+      }
+      result = copystr(argscopy->strbuf + argscopy->stroffset, (const char*)curarg, maxlen, maxlen, &strlen);
+      knargs--;
     }
 
-    // The arguments should be NULL terminated.
-    // Set last argument to NULL, since
-    // space is allocated for NULL argument.
-    if (curarg == NULL) {
-      argscopy->argv[argscopy->nargs] = 0;
-      break;
+    else {
+      // Copy the first char* pointer into the kernel.
+      // Each pointer is a char* that shares the same address as its
+      // first element. Here we get each char* from the char** array argv.
+      result = copyin(args, &curarg, sizeof(userptr_t));
+      
+      // If copyin of each pointer in args fails, return.
+      if (result) {
+        return result;
+      }
+      // The arguments should be NULL terminated.
+      // Set last argument to NULL, since
+      // space is allocated for NULL argument.
+      if (curarg == NULL) {
+        argscopy->argv[argscopy->nargs] = 0;
+        break;
+      }
+      // The data for the char* begins at its address, each byte being a char
+      // up until the terminator. Copy all of this data into the kernel.
+      // The remaining size allowable for the argument strings is ARG_MAX - stroffset,
+      // if this limit is exceeded, return error.
+      result = copyinstr(curarg, argscopy->strbuf + argscopy->stroffset, maxlen, &strlen);
     }
 
-    // The data for the char* begins at its address, each byte being a char
-    // up until the terminator. Copy all of this data into the kernel.
-    // The remaining size allowable for the argument strings is ARG_MAX - stroffset,
-    // if this limit is exceeded, return error.
-    result = copyinstr(curarg, argscopy->strbuf + argscopy->stroffset, ARG_MAX - argscopy->stroffset, &strlen);
     if (result == ENAMETOOLONG) {
       return E2BIG;
     }
@@ -370,9 +391,10 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
 
     // We have successfully copied the string in, now do the bookkeeping
     argscopy->argv[argscopy->nargs] = argscopy->stroffset; // set the offset for the pointer to its string
-    argscopy->stroffset += strlen; // decrease remaining character limit
-    argscopy->nargs++; // increment number of arguments
-    args += sizeof(userptr_t); // increment argument being looked at
+    argscopy->stroffset += strlen;                         // decrease remaining character limit
+    maxlen = ARG_MAX - argscopy->stroffset;                // current max allowable length
+    argscopy->nargs++;                                     // increment number of arguments
+    args += sizeof(userptr_t);                             // increment argument being looked at
   }
 
   // Word alignment requires that 4-byte items like character pointers
