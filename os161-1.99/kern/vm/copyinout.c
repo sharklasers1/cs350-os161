@@ -348,13 +348,11 @@ int copyinargs(userptr_t args, struct argscopy* argscopy, int kernflag) {
     // Check to see if this is a kernel args copy or a user args copy
     // A user args copy requires the added step of bringing in data from user land.
     if (kernflag) {
-      memcpy((void*)&curarg, (const void *)args, sizeof(userptr_t));
-
       if (!knargs) {
         argscopy->argv[argscopy->nargs] = 0;
         break;
       }
-      result = copystr(argscopy->strbuf + argscopy->stroffset, (const char*)curarg, maxlen, maxlen, &strlen);
+      result = copystr(argscopy->strbuf + argscopy->stroffset, ((char**)args)[0], maxlen, maxlen, &strlen);
       knargs--;
     }
 

@@ -102,7 +102,6 @@ runprogram(char *progname, userptr_t args, size_t nargs)
   // Copy in arguments from user space to the kernel
   /////////////////////////////////////////////
 
-
   struct argscopy* argscopy = argscopy_create();
 
   // Subtract one from the arguments passed to the program
