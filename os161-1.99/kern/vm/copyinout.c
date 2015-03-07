@@ -330,28 +330,54 @@ copyoutstr(const char *src, userptr_t userdest, size_t len, size_t *actual)
 int copyargs(char** args, struct argscopy* argscopy, size_t nargs) {
 
   // Size of the current char* argument in bytes
-  size_t strlen = 0;
-  size_t maxlen = ARG_MAX;
+  size_t maxlen = argscopy->datalim;
+  size_t curlen = 0;
+  size_t newlim;
 
   int result;
 
+  // We know the total number of arguments ahead of time, so set it now.
   argscopy->nargs = nargs;
+
+  // Check if numargs, including null terminator, is greater than current limit
+  if (nargs + 1 > argscopy->arglim) {
+    result = setarglim(argscopy, nargs);
+
+    if (result) {
+      return result;
+    }
+  }
 
   for (size_t i = 0; i < nargs; i++) {
 
-    result = copystr(argscopy->strbuf + argscopy->stroffset, args[i], maxlen, maxlen, &strlen);
+    curlen = strlen(args[i]) + 1; // add one for null terminator
+    // If we have no room left in the buffer, try to increase the space
+    if (curlen > maxlen) {
+      newlim = argscopy->datalim;
+      while (curlen > newlim) {
+        newlim += argscopy->datalim;
+      }
+      if (newlim > ARG_MAX) {
+        return E2BIG;
+      }
 
-    if (result == ENAMETOOLONG) {
-      return E2BIG;
+      result = setdatalim(argscopy, argscopy->datalim + newlim);
+
+      if (result) {
+        return result;
+      }
     }
-    else if (result) {
+
+    result = copystr(argscopy->strbuf + argscopy->stroffset, args[i], ARG_MAX, ARG_MAX, NULL);
+
+    if (result) {
       return result;
     }
 
     // We have successfully copied the string in, now do the bookkeeping
     argscopy->argv[i] = argscopy->stroffset;               // set the offset for the pointer to its string
-    argscopy->stroffset += strlen;                         // decrease remaining character limit
-    maxlen = ARG_MAX - argscopy->stroffset;                // current max allowable length
+    argscopy->stroffset += curlen;                         // increase buffer data total
+    maxlen = argscopy->datalim - argscopy->stroffset;      // current max allowable length
   }
 
   // The terminating argument must be set to NULL
@@ -369,6 +395,15 @@ int copyargs(char** args, struct argscopy* argscopy, size_t nargs) {
   // Add one for the null terminator.
   while(((nargs + 1) * sizeof(char*) + argscopy->stroffset) % 8) {
     argscopy->stroffset++;
+
+    if (argscopy->stroffset > argscopy->datalim) {
+      result = setdatalim(argscopy, argscopy->datalim + 8);
+
+      if (result) {
+        return result;
+      }
+    }
+
     argscopy->strbuf[argscopy->stroffset - 1] = 0;
   }
 
@@ -386,8 +421,9 @@ int copyargs(char** args, struct argscopy* argscopy, size_t nargs) {
 int copyinargs(userptr_t args, struct argscopy* argscopy) {
 
   // Size of the current char* argument in bytes
-  size_t strlen = 0;
-  size_t maxlen = ARG_MAX;
+  size_t curlen = 0;
+  size_t maxlen = argscopy->datalim;
+  size_t newlim = 0;
 
   int result;
 
@@ -405,6 +441,7 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
     if (result) {
       return result;
     }
+
     // The arguments should be NULL terminated.
     // Set last argument to NULL, since
     // space is allocated for NULL argument.
@@ -412,25 +449,49 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
       argscopy->argv[argscopy->nargs] = 0;
       break;
     }
+
+    curlen = strlen((const char*)curarg) + 1; // add one for null terminator
+    // If we have no room left in the buffer, try to increase the space
+    if (curlen > maxlen) {
+      newlim = argscopy->datalim;
+      while (curlen > newlim) {
+        newlim += argscopy->datalim;
+      }
+      if (newlim > ARG_MAX) {
+        return E2BIG;
+      }
+
+      result = setdatalim(argscopy, argscopy->datalim + newlim);
+
+      if (result) {
+        return result;
+      }
+    }
+
     // The data for the char* begins at its address, each byte being a char
     // up until the terminator. Copy all of this data into the kernel.
     // The remaining size allowable for the argument strings is ARG_MAX - stroffset,
-    // if this limit is exceeded, return error.
-    result = copyinstr(curarg, argscopy->strbuf + argscopy->stroffset, maxlen, &strlen);
+    result = copyinstr(curarg, argscopy->strbuf + argscopy->stroffset, ARG_MAX, NULL);
 
-    if (result == ENAMETOOLONG) {
-      return E2BIG;
-    }
-    else if (result) {
+    if (result) {
       return result;
     }
 
     // We have successfully copied the string in, now do the bookkeeping
     argscopy->argv[argscopy->nargs] = argscopy->stroffset; // set the offset for the pointer to its string
-    argscopy->stroffset += strlen;                         // decrease remaining character limit
-    maxlen = ARG_MAX - argscopy->stroffset;                // current max allowable length
+    argscopy->stroffset += curlen;                         // increase buffer data total
+    maxlen = argscopy->datalim - argscopy->stroffset;      // current max allowable length
     argscopy->nargs++;                                     // increment number of arguments
     args += sizeof(userptr_t);                             // increment argument being looked at
+
+    // If we are at the arg limit, increase it
+    if (argscopy->nargs == argscopy->arglim) {
+      result = setarglim(argscopy, argscopy->arglim * 2);
+    }
+
+    if (result) {
+      return result;
+    }
   }
 
   // Word alignment requires that 4-byte items like character pointers
@@ -445,11 +506,63 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
   // Add one for the null terminator.
   while(((argscopy->nargs + 1) * sizeof(userptr_t) + argscopy->stroffset) % 8) {
     argscopy->stroffset++;
+
+    if (argscopy->stroffset > argscopy->datalim) {
+      result = setdatalim(argscopy, argscopy->datalim + 8);
+
+      if (result) {
+        return result;
+      }
+    }
+
     argscopy->strbuf[argscopy->stroffset - 1] = 0;
   }
 
   return 0;
  }
+
+/*
+ * setdatalim
+ *
+ * set allowable data size limit
+ */
+int setdatalim(struct argscopy* argscopy, size_t newlim) {
+
+
+  char* newstrbuf = kmalloc(newlim);
+  if (newstrbuf == NULL) {
+    return ENOMEM;
+  }
+  memcpy(newstrbuf, argscopy->strbuf, argscopy->datalim);
+  kfree(argscopy->strbuf);
+
+  argscopy->strbuf = newstrbuf;
+  argscopy->datalim = newlim;
+  
+  return 0;
+}
+
+/*
+ * setarglim
+ *
+ * set allowable data size limit
+ */
+int setarglim(struct argscopy* argscopy, size_t newlim) {
+
+
+  size_t* newargv = kmalloc(sizeof(size_t) * newlim);
+  if (newargv == NULL) {
+    return ENOMEM;
+  }
+
+  memcpy(newargv, argscopy->argv, sizeof(size_t) * argscopy->arglim);
+  kfree(argscopy->argv);
+
+  argscopy->argv = newargv;
+  argscopy->arglim = newlim;
+  
+  return 0;
+}
 
  /*
  * copyoutargs
@@ -504,6 +617,12 @@ struct argscopy* argscopy_create() {
 		return NULL;
 	}
 
+  // max argument size
+  argscopy->arglim = 4;
+
+  // max data size
+  argscopy->datalim = 32;
+
 	// Count of the number of args copied in.
   argscopy->nargs = 0;
 
@@ -511,7 +630,7 @@ struct argscopy* argscopy_create() {
   argscopy->stroffset = 0;
 
   // Track start and end of string data
-  argscopy->strbuf = kmalloc(ARG_MAX);
+  argscopy->strbuf = kmalloc(argscopy->datalim);
 
   if (argscopy->strbuf == NULL) {
   	kfree(argscopy);
@@ -519,7 +638,7 @@ struct argscopy* argscopy_create() {
   }
 
   // Track start and end of pointers
-  argscopy->argv = kmalloc(sizeof(size_t) * ARG_MAX);
+  argscopy->argv = kmalloc(sizeof(size_t) * argscopy->arglim);
 
   if (argscopy->argv == NULL) {
   	kfree(argscopy->strbuf);

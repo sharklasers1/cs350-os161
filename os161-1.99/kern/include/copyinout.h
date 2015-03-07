@@ -74,9 +74,13 @@ struct argscopy {
   size_t nargs;        // Number of arguments in the char* array, excluding the NULL terminator
   size_t* argv;        // Array of offsets for the char* pointers before being added to the user stack address
   char* strbuf;        // data for the char* arguments copied from user space
+  size_t arglim;
+  size_t datalim;
 };
 
 // All the argument copying equipment
+int setdatalim(struct argscopy* argscopy, size_t newlim);
+int setarglim(struct argscopy* argscopy, size_t newlim);
 int copyargs(char** args, struct argscopy *argscopy, size_t nargs);
 int copyinargs(userptr_t args, struct argscopy* argscopy);
 int copyoutargs(struct argscopy* argscopy, vaddr_t* stackptr);
