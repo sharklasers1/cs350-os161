@@ -492,8 +492,6 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
     if (result) {
       return result;
     }
-
-    return 0;
   }
 
   // Word alignment requires that 4-byte items like character pointers
