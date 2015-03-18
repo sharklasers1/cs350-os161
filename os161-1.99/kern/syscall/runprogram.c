@@ -104,10 +104,6 @@ runprogram(char *progname, char** args, size_t nargs)
 
   struct argscopy* argscopy = argscopy_create();
 
-  // Subtract one from the arguments passed to the program
-  // and increment args by one char* since the first
-  // one is the name of the program
-
   if (argscopy == NULL) {
     return ENOMEM;
   }
