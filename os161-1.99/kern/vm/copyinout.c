@@ -492,6 +492,8 @@ int copyinargs(userptr_t args, struct argscopy* argscopy) {
     if (result) {
       return result;
     }
+
+    return 0;
   }
 
   // Word alignment requires that 4-byte items like character pointers
@@ -548,7 +550,6 @@ int setdatalim(struct argscopy* argscopy, size_t newlim) {
  * set allowable data size limit
  */
 int setarglim(struct argscopy* argscopy, size_t newlim) {
-
 
   size_t* newargv = kmalloc(sizeof(size_t) * newlim);
   if (newargv == NULL) {

@@ -107,8 +107,6 @@ runprogram(char *progname, char** args, size_t nargs)
   // Subtract one from the arguments passed to the program
   // and increment args by one char* since the first
   // one is the name of the program
-  nargs--;
-  args++;
 
   if (argscopy == NULL) {
     return ENOMEM;

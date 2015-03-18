@@ -74,8 +74,8 @@ struct argscopy {
   size_t nargs;        // Number of arguments in the char* array, excluding the NULL terminator
   size_t* argv;        // Array of offsets for the char* pointers before being added to the user stack address
   char* strbuf;        // data for the char* arguments copied from user space
-  size_t arglim;
-  size_t datalim;
+  size_t arglim;       // current number of arguments limit, initially 4
+  size_t datalim;      // current copy data size limit, initially 32 bytes
 };
 
 // All the argument copying equipment
