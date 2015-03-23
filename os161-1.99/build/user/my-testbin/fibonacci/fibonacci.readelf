@@ -1,0 +1,217 @@
+ELF Header:
+  Magic:   7f 45 4c 46 01 02 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF32
+  Data:                              2's complement, big endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           MIPS R3000
+  Version:                           0x1
+  Entry point address:               0x400000
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          135168 (bytes into file)
+  Flags:                             0x1001, noreorder, o32, mips1
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         3
+  Size of section headers:           40 (bytes)
+  Number of section headers:         11
+  Section header string table index: 8
+
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .text             PROGBITS        00400000 010000 001860 00  AX  0   0 16
+  [ 2] .rodata           PROGBITS        00401860 011860 0001f8 00   A  0   0 16
+  [ 3] .reginfo          MIPS_REGINFO    00401a58 011a58 000018 18   A  0   0  4
+  [ 4] .data             PROGBITS        10000000 020000 000020 00  WA  0   0 16
+  [ 5] .sbss             NOBITS          10000020 020020 000008 00 WAp  0   0  4
+  [ 6] .pdr              PROGBITS        00000000 020020 000e60 00      0   0  4
+  [ 7] .comment          PROGBITS        00000000 020e80 000132 00      0   0  1
+  [ 8] .shstrtab         STRTAB          00000000 020fb2 00004c 00      0   0  1
+  [ 9] .symtab           SYMTAB          00000000 0211b8 0009a0 10     10  41  4
+  [10] .strtab           STRTAB          00000000 021b58 0004b1 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  REGINFO        0x011a58 0x00401a58 0x00401a58 0x00018 0x00018 R   0x4
+  LOAD           0x010000 0x00400000 0x00400000 0x01a70 0x01a70 R E 0x10000
+  LOAD           0x020000 0x10000000 0x10000000 0x00020 0x00028 RW  0x10000
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .reginfo 
+   01     .text .rodata .reginfo 
+   02     .data .sbss 
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+There are no unwind sections in this file.
+
+Symbol table '.symtab' contains 154 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 00400000     0 SECTION LOCAL  DEFAULT    1 
+     2: 00401860     0 SECTION LOCAL  DEFAULT    2 
+     3: 00401a58     0 SECTION LOCAL  DEFAULT    3 
+     4: 10000000     0 SECTION LOCAL  DEFAULT    4 
+     5: 10000020     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 SECTION LOCAL  DEFAULT    6 
+     7: 00000000     0 SECTION LOCAL  DEFAULT    7 
+     8: 00000000     0 SECTION LOCAL  DEFAULT    8 
+     9: 00000000     0 SECTION LOCAL  DEFAULT    9 
+    10: 00000000     0 SECTION LOCAL  DEFAULT   10 
+    11: 00000000     0 FILE    LOCAL  DEFAULT  ABS mips/crt0.S
+    12: 00000000     0 FILE    LOCAL  DEFAULT  ABS fibonacci.c
+    13: 00400050   244 FUNC    LOCAL  DEFAULT    1 spawn_fib_call
+    14: 00000000     0 FILE    LOCAL  DEFAULT  ABS snprintf.c
+    15: 00400250    84 FUNC    LOCAL  DEFAULT    1 __snprintf_send
+    16: 00000000     0 FILE    LOCAL  DEFAULT  ABS printf.c
+    17: 00400378    84 FUNC    LOCAL  DEFAULT    1 __printf_send
+    18: 00000000     0 FILE    LOCAL  DEFAULT  ABS putchar.c
+    19: 00000000     0 FILE    LOCAL  DEFAULT  ABS puts.c
+    20: 00000000     0 FILE    LOCAL  DEFAULT  ABS atoi.c
+    21: 00401860    11 OBJECT  LOCAL  DEFAULT    2 digits.1337
+    22: 00000000     0 FILE    LOCAL  DEFAULT  ABS exit.c
+    23: 00000000     0 FILE    LOCAL  DEFAULT  ABS strchr.c
+    24: 00000000     0 FILE    LOCAL  DEFAULT  ABS ../../../build/user/lib/l
+    25: 00400650    36 FUNC    LOCAL  DEFAULT    1 __syscall
+    26: 00000000     0 FILE    LOCAL  DEFAULT  ABS errno.c
+    27: 00000000     0 FILE    LOCAL  DEFAULT  ABS __printf.c
+    28: 00400930    72 FUNC    LOCAL  DEFAULT    1 __pf_print
+    29: 00400978    60 FUNC    LOCAL  DEFAULT    1 __pf_endfield
+    30: 004009b4   108 FUNC    LOCAL  DEFAULT    1 __pf_fill
+    31: 00400a20   516 FUNC    LOCAL  DEFAULT    1 __pf_printstuff
+    32: 00000000     0 FILE    LOCAL  DEFAULT  ABS __puts.c
+    33: 00000000     0 FILE    LOCAL  DEFAULT  ABS strlen.c
+    34: 00000000     0 FILE    LOCAL  DEFAULT  ABS udivdi3.c
+    35: 00000000     0 FILE    LOCAL  DEFAULT  ABS umoddi3.c
+    36: 00000000     0 FILE    LOCAL  DEFAULT  ABS __assert.c
+    37: 00000000     0 FILE    LOCAL  DEFAULT  ABS abort.c
+    38: 00000000     0 FILE    LOCAL  DEFAULT  ABS qdivrem.c
+    39: 004012b0   124 FUNC    LOCAL  DEFAULT    1 shl
+    40: 10000010     4 OBJECT  LOCAL  DEFAULT    4 zero.1390
+    41: 00400400    84 FUNC    GLOBAL DEFAULT    1 putchar
+    42: 00400694     8 FUNC    GLOBAL DEFAULT    1 waitpid
+    43: 004007c4     8 FUNC    GLOBAL DEFAULT    1 ioctl
+    44: 00401150   108 FUNC    GLOBAL DEFAULT    1 __puts
+    45: 004003cc    52 FUNC    GLOBAL DEFAULT    1 printf
+    46: 004008bc     8 FUNC    GLOBAL DEFAULT    1 connect
+    47: 00400864     8 FUNC    GLOBAL DEFAULT    1 utimes
+    48: 00400714     8 FUNC    GLOBAL DEFAULT    1 __setlogin
+    49: 00400330    44 FUNC    GLOBAL DEFAULT    1 snprintf
+    50: 004006bc     8 FUNC    GLOBAL DEFAULT    1 munmap
+    51: 0040132c  1332 FUNC    GLOBAL DEFAULT    1 __qdivrem
+    52: 004005b0    36 FUNC    GLOBAL DEFAULT    1 __exit_hack
+    53: 0040088c     8 FUNC    GLOBAL DEFAULT    1 fchmod
+    54: 10000020     4 OBJECT  GLOBAL DEFAULT    5 errno
+    55: 00401860     0 NOTYPE  GLOBAL DEFAULT  ABS _etext
+    56: 00400824     8 FUNC    GLOBAL DEFAULT    1 __getcwd
+    57: 004006dc     8 FUNC    GLOBAL DEFAULT    1 getresuid
+    58: 10008010     0 NOTYPE  GLOBAL DEFAULT  ABS _gp
+    59: 0040069c     8 FUNC    GLOBAL DEFAULT    1 getpid
+    60: 00400894     8 FUNC    GLOBAL DEFAULT    1 fchown
+    61: 0040081c     8 FUNC    GLOBAL DEFAULT    1 fchdir
+    62: 00400834     8 FUNC    GLOBAL DEFAULT    1 readlink
+    63: 00400460    40 FUNC    GLOBAL DEFAULT    1 puts
+    64: 00400764     8 FUNC    GLOBAL DEFAULT    1 dup2
+    65: 004007e4     8 FUNC    GLOBAL DEFAULT    1 remove
+    66: 004002a4   140 FUNC    GLOBAL DEFAULT    1 vsnprintf
+    67: 004007f4     8 FUNC    GLOBAL DEFAULT    1 rmdir
+    68: 004008ac     8 FUNC    GLOBAL DEFAULT    1 socket
+    69: 004007cc     8 FUNC    GLOBAL DEFAULT    1 select
+    70: 004008a4     8 FUNC    GLOBAL DEFAULT    1 lchown
+    71: 00400704     8 FUNC    GLOBAL DEFAULT    1 setgroups
+    72: 00000000     0 NOTYPE  GLOBAL DEFAULT  ABS _DYNAMIC_LINK
+    73: 10000000     4 OBJECT  GLOBAL DEFAULT    4 prog
+    74: 004007ac     8 FUNC    GLOBAL DEFAULT    1 ftruncate
+    75: 00401220    44 FUNC    GLOBAL DEFAULT    1 __umoddi3
+    76: 0040079c     8 FUNC    GLOBAL DEFAULT    1 lseek
+    77: 00400884     8 FUNC    GLOBAL DEFAULT    1 chown
+    78: 004006b4     8 FUNC    GLOBAL DEFAULT    1 mmap
+    79: 00401200    32 FUNC    GLOBAL DEFAULT    1 __udivdi3
+    80: 004012a0    16 FUNC    GLOBAL DEFAULT    1 abort
+    81: 0040087c     8 FUNC    GLOBAL DEFAULT    1 chmod
+    82: 00400c24  1320 FUNC    GLOBAL DEFAULT    1 __vprintf
+    83: 00400754     8 FUNC    GLOBAL DEFAULT    1 pipe
+    84: 004008cc     8 FUNC    GLOBAL DEFAULT    1 accept
+    85: 00400804     8 FUNC    GLOBAL DEFAULT    1 rename
+    86: 0040090c     8 FUNC    GLOBAL DEFAULT    1 nanosleep
+    87: 0040078c     8 FUNC    GLOBAL DEFAULT    1 write
+    88: 00400854     8 FUNC    GLOBAL DEFAULT    1 fstat
+    89: 0040071c     8 FUNC    GLOBAL DEFAULT    1 kill
+    90: 004008b4     8 FUNC    GLOBAL DEFAULT    1 bind
+    91: 00400360    24 FUNC    GLOBAL DEFAULT    1 vprintf
+    92: 004007fc     8 FUNC    GLOBAL DEFAULT    1 mkfifo
+    93: 0040091c     8 FUNC    GLOBAL DEFAULT    1 reboot
+    94: 00400814     8 FUNC    GLOBAL DEFAULT    1 chdir
+    95: 00400000    76 FUNC    GLOBAL DEFAULT    1 __start
+    96: 004008f4     8 FUNC    GLOBAL DEFAULT    1 setsockopt
+    97: 004006d4     8 FUNC    GLOBAL DEFAULT    1 issetugid
+    98: 004006cc     8 FUNC    GLOBAL DEFAULT    1 umask
+    99: 0040085c     8 FUNC    GLOBAL DEFAULT    1 lstat
+   100: 004007a4     8 FUNC    GLOBAL DEFAULT    1 flock
+   101: 00400774     8 FUNC    GLOBAL DEFAULT    1 read
+   102: 10000024     4 OBJECT  GLOBAL DEFAULT    5 __argv
+   103: 00400914     8 FUNC    GLOBAL DEFAULT    1 sync
+   104: 0040089c     8 FUNC    GLOBAL DEFAULT    1 lchmod
+   105: 00400784     8 FUNC    GLOBAL DEFAULT    1 getdirentry
+   106: 004008c4     8 FUNC    GLOBAL DEFAULT    1 listen
+   107: 00400674     8 FUNC    GLOBAL DEFAULT    1 fork
+   108: 00400684     8 FUNC    GLOBAL DEFAULT    1 execv
+   109: 004006e4     8 FUNC    GLOBAL DEFAULT    1 setresuid
+   110: 00400724     8 FUNC    GLOBAL DEFAULT    1 sigaction
+   111: 00400904     8 FUNC    GLOBAL DEFAULT    1 __settime
+   112: 00400744     8 FUNC    GLOBAL DEFAULT    1 sigreturn
+   113: 004006ac     8 FUNC    GLOBAL DEFAULT    1 sbrk
+   114: 0040082c     8 FUNC    GLOBAL DEFAULT    1 symlink
+   115: 00400144   268 FUNC    GLOBAL DEFAULT    1 main
+   116: 004006a4     8 FUNC    GLOBAL DEFAULT    1 getppid
+   117: 004006fc     8 FUNC    GLOBAL DEFAULT    1 getgroups
+   118: 004007d4     8 FUNC    GLOBAL DEFAULT    1 poll
+   119: 004008fc     8 FUNC    GLOBAL DEFAULT    1 __time
+   120: 0040070c     8 FUNC    GLOBAL DEFAULT    1 __getlogin
+   121: 0040083c     8 FUNC    GLOBAL DEFAULT    1 mount
+   122: 004008d4     8 FUNC    GLOBAL DEFAULT    1 shutdown
+   123: 0040075c     8 FUNC    GLOBAL DEFAULT    1 dup
+   124: 004008e4     8 FUNC    GLOBAL DEFAULT    1 getpeername
+   125: 0040086c     8 FUNC    GLOBAL DEFAULT    1 futimes
+   126: 0040067c     8 FUNC    GLOBAL DEFAULT    1 vfork
+   127: 004007b4     8 FUNC    GLOBAL DEFAULT    1 fsync
+   128: 0040077c     8 FUNC    GLOBAL DEFAULT    1 pread
+   129: 004008ec     8 FUNC    GLOBAL DEFAULT    1 getsockopt
+   130: 004006f4     8 FUNC    GLOBAL DEFAULT    1 setresgid
+   131: 00400874     8 FUNC    GLOBAL DEFAULT    1 lutimes
+   132: 0040084c     8 FUNC    GLOBAL DEFAULT    1 stat
+   133: 0040080c     8 FUNC    GLOBAL DEFAULT    1 access
+   134: 10000028     0 NOTYPE  GLOBAL DEFAULT  ABS _end
+   135: 00401250    80 FUNC    GLOBAL DEFAULT    1 __bad_assert
+   136: 004007dc     8 FUNC    GLOBAL DEFAULT    1 link
+   137: 004005d4    16 FUNC    GLOBAL DEFAULT    1 exit
+   138: 00400844     8 FUNC    GLOBAL DEFAULT    1 unmount
+   139: 004006ec     8 FUNC    GLOBAL DEFAULT    1 getresgid
+   140: 00400490   280 FUNC    GLOBAL DEFAULT    1 atoi
+   141: 0040068c     8 FUNC    GLOBAL DEFAULT    1 _exit
+   142: 004011c0    60 FUNC    GLOBAL DEFAULT    1 strlen
+   143: 0040074c     8 FUNC    GLOBAL DEFAULT    1 open
+   144: 0040072c     8 FUNC    GLOBAL DEFAULT    1 sigpending
+   145: 004005f0    96 FUNC    GLOBAL DEFAULT    1 strchr
+   146: 004006c4     8 FUNC    GLOBAL DEFAULT    1 mprotect
+   147: 004007bc     8 FUNC    GLOBAL DEFAULT    1 fcntl
+   148: 004007ec     8 FUNC    GLOBAL DEFAULT    1 mkdir
+   149: 00400794     8 FUNC    GLOBAL DEFAULT    1 pwrite
+   150: 0040076c     8 FUNC    GLOBAL DEFAULT    1 close
+   151: 0040073c     8 FUNC    GLOBAL DEFAULT    1 sigsuspend
+   152: 00400734     8 FUNC    GLOBAL DEFAULT    1 sigprocmask
+   153: 004008dc     8 FUNC    GLOBAL DEFAULT    1 getsockname
+
+No version information found in this file.
