@@ -47,19 +47,27 @@ struct vnode;
  * You write this.
  */
 
+// smartvm replacement addrspace
+//=======================================
+
 struct addrspace {
-  vaddr_t as_vbase1;
-  paddr_t as_pbase1;
-  size_t as_npages1;
-  vaddr_t as_vbase2;
-  paddr_t as_pbase2;
-  size_t as_npages2;
-  paddr_t as_stackpbase;
+  struct pagetable *textSegTable;
+  struct pagetable *dataSegTable;
+  struct pagetable *stackSegTable;
   size_t as_loaded;
 };
 
-// smartvm replacement addressspace
-//=======================================
+struct pagetable {
+  vaddr_t pt_vbase;
+  size_t  pt_len;
+  struct pte pt_entries*;
+};
+
+struct pte {
+  paddr_t pt_pfn;                  // PFN the VPN is mapped to
+  int pt_frameCount;               // Number of contiguous frames asked for
+};
+
 
 // struct addrspace {
 //   vaddr_t as_vbase1;
