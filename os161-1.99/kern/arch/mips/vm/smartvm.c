@@ -363,7 +363,6 @@ int vm_fault(int faulttype, vaddr_t faultAddress) {
     return 0;
   }
 
-  kprintf("smartvm: Ran out of TLB entries - going to select one at random\n");
   ehi = faultAddress;
 
   if (readOnly) {
