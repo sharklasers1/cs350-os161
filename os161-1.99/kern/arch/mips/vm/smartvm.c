@@ -626,9 +626,14 @@ int as_copy(struct addrspace *old, struct addrspace **ret) {
     return ENOMEM;
   }
 
-  new->textSegTable = old->textSegTable;
-  new->dataSegTable = old->dataSegTable;
-  new->stackSegTable = old->stackSegTable;
+  // Copy over respective page table lengths and virtual bases.
+  new->textSegTable->pt_len = old->textSegTable->pt_len;
+  new->textSegTable->pt_vbase = old->textSegTable->pt_vbase;
+  new->dataSegTable->pt_len = old->dataSegTable->pt_len;
+  new->dataSegTable->pt_vbase = old->dataSegTable->pt_vbase;
+  new->stackSegTable->pt_len = old->stackSegTable->pt_len;
+  new->stackSegTable->pt_vbase = old->stackSegTable->pt_vbase;
+
   new->as_loaded = old->as_loaded;
 
   /* (Mis)use as_prepare_load to allocate some physical memory. */
