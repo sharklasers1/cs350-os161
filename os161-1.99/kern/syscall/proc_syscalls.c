@@ -145,13 +145,6 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
 
   memcpy(dupTrap, tf, sizeof(struct trapframe));
   
-  // allocate duplicate address space for child process
-  as = as_create();
-
-  if (as == NULL) {
-    return ENOMEM;
-  }
-
   // copy the address space of the parent process
   result = as_copy(curproc_getas(), &as);
   if (result) {
@@ -164,6 +157,8 @@ int sys_fork(struct trapframe* tf, pid_t *retval) {
   proc_created->p_addrspace = as;
 
   // we are now ready to create the child process using thread_fork
+  DEBUG(DB_EXEC, "Starting Forked program\n");
+
   result = thread_fork("Forked thread", // name of thread
                         proc_created, // process to attach thread to
                         enter_forked_process, // entrypoint function
