@@ -125,6 +125,8 @@ runprogram(char *progname, char** args, size_t nargs)
   // Now that everything has succeeded, we can free the argscopy
   argscopy_destroy(argscopy);
 
+  DEBUG(DB_EXEC, "Starting command line program\n");
+
 	/* Warp to user mode. */
 	enter_new_process(nargs /*argc*/, (userptr_t)(stackptr) /*userspace addr of argv*/,
 			  stackptr, entrypoint);
