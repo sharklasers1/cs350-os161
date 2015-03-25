@@ -191,6 +191,10 @@ enter_forked_process(void *data1, unsigned long data2)
 	
 	// allocate trapframe on new process' kernel stack
 	// instead of kernel heap
+	
+	// the address space was not activated, do so now that curproc is the desired address space
+	as_activate();
+
 	struct trapframe newtf = *((struct trapframe *)data1);
 	kfree(data1); // Now that the tf is on the kernel thread stack, remove it from the kernel heap
 
@@ -198,8 +202,6 @@ enter_forked_process(void *data1, unsigned long data2)
 	newtf.tf_a3 = 0; // indicate it was a successful fork
 	newtf.tf_v0 = 0; // return value of child should be 0, we're new to the world!
 
-	// the address space was not activated, do so now that curproc is the desired address space
-	as_activate();
 
 	mips_usermode(&newtf);
 }

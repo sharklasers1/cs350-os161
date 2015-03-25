@@ -94,7 +94,7 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
 // @exitcode is the exitcode the process finished with
 
 void proctable_exit_process(struct proc *proc_exited, int exitcode) {
-  DEBUG(DB_EXEC, "Exiting PID: %d from proctable\n", getPID(proc_exited));
+  // DEBUG(DB_EXEC, "Exiting PID: %d from proctable\n", getPID(proc_exited));
 
   KASSERT(proc_exited != NULL);
   KASSERT(proc_exited->p_pid > 0);
