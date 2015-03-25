@@ -51,22 +51,22 @@ struct vnode;
 //=======================================
 
 struct addrspace {
-  struct pagetable *textSegTable;
-  struct pagetable *dataSegTable;
-  struct pagetable *stackSegTable;
+  struct pagetable* textSegTable;
+  struct pagetable* dataSegTable;
+  struct pagetable* stackSegTable;
   size_t as_loaded;
 };
 
-struct pagetable {
-  vaddr_t pt_vbase;
-  size_t  pt_len;
-  struct pte pt_entries*;
+struct pte {
+  paddr_t pte_pfn;                  // PFN the VPN is mapped to
 };
 
-struct pte {
-  paddr_t pt_pfn;                  // PFN the VPN is mapped to
-  int pt_frameCount;               // Number of contiguous frames asked for
+struct pagetable {
+  vaddr_t pt_vbase;                  // Base virtual address of the pagetable
+  size_t  pt_len;                    // Number of entries in the page table
+  struct pte* pt_entries;            // All the page table entries
 };
+
 
 
 // struct addrspace {

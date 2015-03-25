@@ -3,7 +3,6 @@
 
 #include <addrspace.h>
 
-
 // Core map entry
 // The core map contains an entry for every physical frame in the system.
 
@@ -18,14 +17,18 @@ struct coremap {
   struct lock* cm_lock;
 };
 
+void cme_free(paddr_t paddr);
+
 struct cme {
   int status;                   // Status of the cte, it could be free, unassignable, in-use. 0 = free, 1 = in-use, 2 = unassignable
   paddr_t paddr;                // The physical address the coremap entry represents
-  struct addrspace* as;         // The address space the cte is currently in-use with
   vaddr_t vaddr;                // The virtual address that the physical frame is mapped to
+  size_t frameCount;            // Number of contiguous CMEs associated with this first frame
 
   // Using the above two fields, we can get the PTE that is bound to it, if any
 };
 
 struct lock coremapLock;
-struct coremap coremap*;
+struct coremap* coremap;
+
+#endif /* _SMARTVM_H_ */
