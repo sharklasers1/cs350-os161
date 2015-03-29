@@ -2,6 +2,7 @@
 #define _SMARTVM_H_
 
 #include <addrspace.h>
+#include <synch.h>
 
 // Core map entry
 // The core map contains an entry for every physical frame in the system.

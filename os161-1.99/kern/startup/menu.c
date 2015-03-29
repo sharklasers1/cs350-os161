@@ -45,6 +45,7 @@
 #include "opt-synchprobs.h"
 #include "opt-sfs.h"
 #include "opt-net.h"
+// #include "../arch/mips/vm/smartvm.h"
 
 /*
  * In-kernel menu and command dispatcher.
@@ -98,10 +99,29 @@ cmd_progthread(void *ptr, unsigned long nargs)
 
 	strcpy(progname, args[0]);
 
+	// size_t freeCount = 0;
+	// for (size_t i = 0; i < coremap->cm_len; i++) {
+	//   if (coremap->cm_entries[i].status == CM_FREE) {
+	//     freeCount++;
+	//   }
+	//   else if (coremap->cm_entries[i].status == CM_INUSE) {
+	// 		DEBUG(DB_EXEC, "Found an IN-USE COREMAP at %d\n", i);
+	// 		if (i == 33) {
+	// 			coremap->cm_entries[i].status = CM_FREE;
+  //        coremap->cm_entries[i].frameCount = 0;
+  //        kfree(((void*)coremap->cm_entries[i].vaddr));
+	// 		}
+	//   }
+	// }
+
+	// DEBUG(DB_EXEC, "Starting command line program with %d FREE COREMAPS\n", freeCount);
 	result = runprogram(progname, (char**)ptr, (size_t)nargs);
 	if (result) {
 		kprintf("Running program %s failed: %s\n", args[0],
 			strerror(result));
+
+		// Prevent the kernel from crashing on memory outage.
+    sys__exit(result);
 		return;
 	}
 

@@ -70,6 +70,8 @@ int proctable_add_process(struct proc *proc_created, struct proc *proc_parent) {
     return -1;
   }
 
+  DEBUG(DB_EXEC, "New process in table: %d\n", getPID(proc_created));
+
   // Increase the count of processes in the procTable
   procCount++;
 

@@ -67,7 +67,7 @@ void cme_free(vaddr_t vaddr) {
     }
   }
 
-  panic("Trying to update a coremap entry that doesn't exist");
+  kprintf("Trying to update a coremap entry that doesn't exist, possibly freeing things that were never allocated.");
 }
 
 void vm_bootstrap(void) {
@@ -89,7 +89,10 @@ void vm_bootstrap(void) {
   ram_getsize(&startpaddr, &endpaddr);
 
   // Get the total number of physical frames available in the system, record as length of coremap
-  coremap->cm_len = (endpaddr - startpaddr) / PAGE_SIZE;
+  // subtract one because the last one is the END of the last paddr we can use, not the START of the last physical page
+  // we can use.
+  coremap->cm_len = (endpaddr - startpaddr) / PAGE_SIZE - 1;
+  DEBUG(DB_EXEC, "TOTAL COREMAPS: %d\n", coremap->cm_len);
 
   // We would normally kmalloc coremap to put it on kernel heap, but
   // since kmalloc is in the weird stage between not working after ram_getsizing
@@ -102,6 +105,7 @@ void vm_bootstrap(void) {
 
   // The number of coremap entries that must be made unassignable, seeing as they would reference coremaps
   size_t metaCoremaps = SFS_ROUNDUP(totalCoremapSize, PAGE_SIZE) / PAGE_SIZE;
+  DEBUG(DB_EXEC, "TOTAL COREMAPS USED FOR COREMAPS: %d\n", metaCoremaps);
 
   // Advance free space past the space allocated for all the coremap entries
   size_t freepaddr = startpaddr + totalCoremapSize;
@@ -380,6 +384,7 @@ int vm_fault(int faulttype, vaddr_t faultAddress) {
 
 // Setup new address space segment tables.
 struct addrspace* as_create(void) {
+
   struct addrspace *as = kmalloc(sizeof(struct addrspace));
   if (as==NULL) {
     return NULL;
@@ -428,22 +433,37 @@ void as_destroy(struct addrspace *as) {
   // free the page table entries.
   lock_acquire(coremap->cm_lock);
 
-  for (size_t i = 0; i < as->textSegTable->pt_len; i++) {
-    paddr = as->textSegTable->pt_entries[i].pte_pfn;
-    vaddr = PADDR_TO_KVADDR(paddr);
-    cme_free(vaddr);
+  if (as->stackSegTable->pt_entries != NULL) {
+    for (size_t i = 0; i < as->stackSegTable->pt_len; i++) {
+      paddr = as->stackSegTable->pt_entries[i].pte_pfn;
+      if (paddr == 0) {
+        break;
+      }
+      vaddr = PADDR_TO_KVADDR(paddr);
+      cme_free(vaddr);
+    }
   }
 
-  for (size_t i = 0; i < as->dataSegTable->pt_len; i++) {
-    paddr = as->dataSegTable->pt_entries[i].pte_pfn;
-    vaddr = PADDR_TO_KVADDR(paddr);
-    cme_free(vaddr);
+  if (as->textSegTable->pt_entries != NULL) {
+    for (size_t i = 0; i < as->textSegTable->pt_len; i++) {
+      paddr = as->textSegTable->pt_entries[i].pte_pfn;
+      if (paddr == 0) {
+        break;
+      }
+      vaddr = PADDR_TO_KVADDR(paddr);
+      cme_free(vaddr);
+    }
   }
 
-  for (size_t i = 0; i < as->stackSegTable->pt_len; i++) {
-    paddr = as->stackSegTable->pt_entries[i].pte_pfn;
-    vaddr = PADDR_TO_KVADDR(paddr);
-    cme_free(vaddr);
+  if (as->dataSegTable->pt_entries != NULL) {
+    for (size_t i = 0; i < as->dataSegTable->pt_len; i++) {
+      paddr = as->dataSegTable->pt_entries[i].pte_pfn;
+      if (paddr == 0) {
+        break;
+      }
+      vaddr = PADDR_TO_KVADDR(paddr);
+      cme_free(vaddr);
+    }
   }
 
   lock_release(coremap->cm_lock);
@@ -543,6 +563,25 @@ int as_prepare_load(struct addrspace *as) {
   KASSERT(as->dataSegTable->pt_entries == NULL);
   KASSERT(as->stackSegTable->pt_entries == NULL);
 
+  // Setup the stack, since was not done in as_define_region
+  as->stackSegTable->pt_len = SMARTVM_STACKPAGES;
+  as->stackSegTable->pt_vbase = MIPS_KSEG0 - SMARTVM_STACKPAGES * PAGE_SIZE;
+  as->stackSegTable->pt_entries = kmalloc(sizeof(struct pte) * as->stackSegTable->pt_len);
+
+  if (as->stackSegTable->pt_entries == NULL) {
+    return ENOMEM;
+  }
+
+  for (size_t i = 0; i < as->stackSegTable->pt_len; i++) {
+    as->stackSegTable->pt_entries[i].pte_pfn = getppages(1);
+
+    if (as->stackSegTable->pt_entries[i].pte_pfn == 0) {
+      return ENOMEM;
+    }
+
+    as_zero_region(as->stackSegTable->pt_entries[i].pte_pfn, 1);
+  }
+
   // Allocate the needed page table entries for the text segment.
   as->textSegTable->pt_entries = kmalloc(sizeof(struct pte) * as->textSegTable->pt_len);
   if (as->textSegTable->pt_entries == NULL) {
@@ -575,25 +614,6 @@ int as_prepare_load(struct addrspace *as) {
     }
 
     as_zero_region(as->dataSegTable->pt_entries[i].pte_pfn, 1);
-  }
-
-  // Setup the stack, since was not done in as_define_region
-  as->stackSegTable->pt_len = SMARTVM_STACKPAGES;
-  as->stackSegTable->pt_vbase = MIPS_KSEG0 - SMARTVM_STACKPAGES * PAGE_SIZE;
-  as->stackSegTable->pt_entries = kmalloc(sizeof(struct pte) * as->stackSegTable->pt_len);
-
-  if (as->stackSegTable->pt_entries == NULL) {
-    return ENOMEM;
-  }
-
-  for (size_t i = 0; i < as->stackSegTable->pt_len; i++) {
-    as->stackSegTable->pt_entries[i].pte_pfn = getppages(1);
-
-    if (as->stackSegTable->pt_entries[i].pte_pfn == 0) {
-      return ENOMEM;
-    }
-
-    as_zero_region(as->stackSegTable->pt_entries[i].pte_pfn, 1);
   }
 
   return 0;

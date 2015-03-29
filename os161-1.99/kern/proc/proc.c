@@ -50,7 +50,6 @@
 #include <addrspace.h>
 #include <vnode.h>
 #include <vfs.h>
-#include <synch.h>
 #include <kern/fcntl.h>  
 
 /*
