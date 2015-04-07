@@ -69,5 +69,22 @@ int copyout(const void *src, userptr_t userdest, size_t len);
 int copyinstr(const_userptr_t usersrc, char *dest, size_t len, size_t *got);
 int copyoutstr(const char *src, userptr_t userdest, size_t len, size_t *got);
 
+struct argscopy {
+  size_t stroffset;    // Offset indicating the number of bytes used in the char* arguments
+  size_t nargs;        // Number of arguments in the char* array, excluding the NULL terminator
+  size_t* argv;        // Array of offsets for the char* pointers before being added to the user stack address
+  char* strbuf;        // data for the char* arguments copied from user space
+  size_t arglim;       // current number of arguments limit, initially 4
+  size_t datalim;      // current copy data size limit, initially 32 bytes
+};
+
+// All the argument copying equipment
+int setdatalim(struct argscopy* argscopy, size_t newlim);
+int setarglim(struct argscopy* argscopy, size_t newlim);
+int copyargs(char** args, struct argscopy *argscopy, size_t nargs);
+int copyinargs(userptr_t args, struct argscopy* argscopy);
+int copyoutargs(struct argscopy* argscopy, vaddr_t* stackptr);
+struct argscopy* argscopy_create(void);
+void argscopy_destroy(struct argscopy* argscopy);
 
 #endif /* _COPYINOUT_H_ */

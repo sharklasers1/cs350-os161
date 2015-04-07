@@ -318,7 +318,7 @@ exception_return:
    lw s8, 156(sp)		/* restore s8 */
    lw k0, 160(sp)		/* fetch exception return PC into k0 */
 
-   lw sp, 152(sp)		/* fetch saved sp (must be last) */
+   lw sp, 152(sp)		/* fetch saved sp (must be last) returns us to context of thread before trapframe*/
    
    /* done */
    jr k0			/* jump back */

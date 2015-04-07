@@ -37,6 +37,7 @@
 #include <mips/tlb.h>
 #include <addrspace.h>
 #include <vm.h>
+#include <syscall.h>
 
 /*
  * Dumb MIPS-only "VM system" that is intended to only be just barely
@@ -115,6 +116,7 @@ vm_fault(int faulttype, vaddr_t faultaddress)
 	uint32_t ehi, elo;
 	struct addrspace *as;
 	int spl;
+	int readOnly = 0;
 
 	faultaddress &= PAGE_FRAME;
 
@@ -122,7 +124,8 @@ vm_fault(int faulttype, vaddr_t faultaddress)
 
 	switch (faulttype) {
 	    case VM_FAULT_READONLY:
-		/* We always create pages read-write, so we can't get this */
+		kprintf("Attempted to write ROM, killing process.\n");
+		sys__exit(1);
 		panic("dumbvm: got VM_FAULT_READONLY\n");
 	    case VM_FAULT_READ:
 	    case VM_FAULT_WRITE:
@@ -170,12 +173,19 @@ vm_fault(int faulttype, vaddr_t faultaddress)
 	stackbase = USERSTACK - DUMBVM_STACKPAGES * PAGE_SIZE;
 	stacktop = USERSTACK;
 
+	// Translation of code segment virtual address to physical address of code segment
 	if (faultaddress >= vbase1 && faultaddress < vtop1) {
+		// If it was in the code segment, it needs to be read only provided it has already been loaded.
+		if (as->as_loaded) {
+			readOnly = 1;
+		}
 		paddr = (faultaddress - vbase1) + as->as_pbase1;
 	}
+	// Translation of data segment virtual address to physical address of data segment
 	else if (faultaddress >= vbase2 && faultaddress < vtop2) {
 		paddr = (faultaddress - vbase2) + as->as_pbase2;
 	}
+	// Translation of stack segment virtual address to physical address of stack segment
 	else if (faultaddress >= stackbase && faultaddress < stacktop) {
 		paddr = (faultaddress - stackbase) + as->as_stackpbase;
 	}
@@ -195,16 +205,33 @@ vm_fault(int faulttype, vaddr_t faultaddress)
 			continue;
 		}
 		ehi = faultaddress;
-		elo = paddr | TLBLO_DIRTY | TLBLO_VALID;
+
+		if (readOnly) {
+			elo = paddr | TLBLO_VALID;
+		}
+		else {
+			elo = paddr | TLBLO_DIRTY | TLBLO_VALID;
+		}
 		DEBUG(DB_VM, "dumbvm: 0x%x -> 0x%x\n", faultaddress, paddr);
 		tlb_write(ehi, elo, i);
 		splx(spl);
 		return 0;
 	}
 
-	kprintf("dumbvm: Ran out of TLB entries - cannot handle page fault\n");
+	kprintf("dumbvm: Ran out of TLB entries - going to select one at random\n");
+	ehi = faultaddress;
+
+	if (readOnly) {
+		elo = paddr | TLBLO_VALID;
+	}
+	else {
+		elo = paddr | TLBLO_DIRTY | TLBLO_VALID;
+	}
+	DEBUG(DB_VM, "dumbvm: 0x%x -> 0x%x\n", faultaddress, paddr);
+	tlb_random(ehi, elo);
+
 	splx(spl);
-	return EFAULT;
+	return 0;
 }
 
 struct addrspace *
@@ -222,6 +249,7 @@ as_create(void)
 	as->as_pbase2 = 0;
 	as->as_npages2 = 0;
 	as->as_stackpbase = 0;
+	as->as_loaded = 0;
 
 	return as;
 }
@@ -340,7 +368,7 @@ as_prepare_load(struct addrspace *as)
 int
 as_complete_load(struct addrspace *as)
 {
-	(void)as;
+	as->as_loaded = 1;
 	return 0;
 }
 
@@ -367,6 +395,7 @@ as_copy(struct addrspace *old, struct addrspace **ret)
 	new->as_npages1 = old->as_npages1;
 	new->as_vbase2 = old->as_vbase2;
 	new->as_npages2 = old->as_npages2;
+	new->as_loaded = old->as_loaded;
 
 	/* (Mis)use as_prepare_load to allocate some physical memory. */
 	if (as_prepare_load(new)) {

@@ -38,12 +38,17 @@
 
 #include <spinlock.h>
 #include <thread.h> /* required for struct threadarray */
+#include "opt-A2.h"
 
 struct addrspace;
 struct vnode;
 #ifdef UW
 struct semaphore;
 #endif // UW
+
+#define PROC_EXITED 0
+#define PROC_RUNNING 1
+#define PROC_NO_PID -1
 
 /*
  * Process structure.
@@ -69,6 +74,13 @@ struct proc {
 #endif
 
 	/* add more material here as needed */
+
+  pid_t p_pid; // Process id of current process.
+  pid_t p_ppid; // Process id of parent process.
+  int p_state; // State of the process, running or exited.
+  int p_exitcode; // Exit code.
+  struct cv *wait_cv; // parent proc waits on this cv until its child exits.
+
 };
 
 /* This is the process structure for the kernel and for kernel-only threads. */
@@ -100,5 +112,28 @@ struct addrspace *curproc_getas(void);
 /* Change the address space of the current process, and return the old one. */
 struct addrspace *curproc_setas(struct addrspace *);
 
+// Returns the process' exitcode
+int getExitcode(struct proc *proc);
+
+// Returns the process' PID
+int getPID(struct proc *proc);
+
+// Returns the process' PPID
+int getPPID(struct proc *proc);
+
+// Returns the process' state
+int getState(struct proc *proc);
+
+// Sets the process' exitcode
+void setExitcode(struct proc *proc, int exitcode);
+
+// Sets the process' PID
+void setPID(struct proc *proc, int newPID);
+
+// Sets the process' PPID
+void setPPID(struct proc *proc, int newPPID);
+
+// Sets the process' state
+void setState(struct proc *proc, int newState);
 
 #endif /* _PROC_H_ */

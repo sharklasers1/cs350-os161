@@ -1,0 +1,2354 @@
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 8%
+Mean cat waiting time: 0.201949 seconds
+Mean mouse waiting time: 0.202685 seconds
+Operation took 11.964988817 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 7%
+Mean cat waiting time: 0.403100 seconds
+Mean mouse waiting time: 0.402833 seconds
+Operation took 12.946701017 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 50%
+Mean cat waiting time: 1.863633 seconds
+Mean mouse waiting time: 1.660912 seconds
+Operation took 19.996041777 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 8 5 1 1 1 1
+Using 4 bowls, 8 cats, and 8 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 57%
+Mean cat waiting time: 4.220296 seconds
+Mean mouse waiting time: 4.194700 seconds
+Operation took 35.026729577 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 1 5 1 1 1 1
+Using 4 bowls, 8 cats, and 1 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 41%
+Mean cat waiting time: 2.595047 seconds
+Mean mouse waiting time: 3.22386 seconds
+Operation took 27.062565657 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 1 10 5 1 1 1 1
+Using 4 bowls, 1 cats, and 10 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 45%
+Mean cat waiting time: 3.423434 seconds
+Mean mouse waiting time: 3.143194 seconds
+Operation took 30.074102377 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 2 0 5 1 1 1 1
+Using 4 bowls, 2 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 22%
+Mean cat waiting time: 0.100987 seconds
+Operation took 10.943265377 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 4 5 1 1 1 1
+Using 4 bowls, 0 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 42%
+Mean mouse waiting time: 0.302763 seconds
+Operation took 11.941321377 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 0 5 1 1 1 1
+Using 4 bowls, 8 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 59%
+Mean cat waiting time: 0.732339 seconds
+Operation took 16.975727817 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 16 5 1 1 1 1
+Using 4 bowls, 0 cats, and 16 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 83%
+Mean mouse waiting time: 1.887610 seconds
+Operation took 24.003706457 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy2
+Starting lock test...
+cleanitems: Destroying sems, locks, and cvs
+Lock test done.
+Operation took 1.773905600 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: uw1
+Starting uwlocktest1...
+value of test_value = 0 should be 0
+TEST SUCCEEDED
+cleanitems: Destroying sems and locks
+uwlocktest1 done.
+Operation took 23.351366200 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy3
+Starting CV test...
+32 threads should print out in reverse order 5 times.
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+cleanitems: Destroying sems, locks, and cvs
+CV test done
+Operation took 2.379597320 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 7%
+Mean cat waiting time: 0.404557 seconds
+Mean mouse waiting time: 0.404663 seconds
+Operation took 12.965023897 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 45%
+Mean cat waiting time: 1.964379 seconds
+Mean mouse waiting time: 1.865260 seconds
+Operation took 22.022773257 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 8 5 1 1 1 1
+Using 4 bowls, 8 cats, and 8 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 55%
+Mean cat waiting time: 4.802511 seconds
+Mean mouse waiting time: 4.76050 seconds
+Operation took 36.090832857 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 1 5 1 1 1 1
+Using 4 bowls, 8 cats, and 1 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 43%
+Mean cat waiting time: 2.443520 seconds
+Mean mouse waiting time: 3.17275 seconds
+Operation took 26.051606657 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 1 10 5 1 1 1 1
+Using 4 bowls, 1 cats, and 10 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 42%
+Mean cat waiting time: 4.22314 seconds
+Mean mouse waiting time: 3.764519 seconds
+Operation took 32.068055697 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 2 0 5 1 1 1 1
+Using 4 bowls, 2 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 22%
+Mean cat waiting time: 0.101153 seconds
+Operation took 10.938854177 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 4 5 1 1 1 1
+Using 4 bowls, 0 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 38%
+Mean mouse waiting time: 0.302615 seconds
+Operation took 12.932117057 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 0 5 1 1 1 1
+Using 4 bowls, 8 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 72%
+Mean cat waiting time: 0.505238 seconds
+Operation took 13.947334897 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 16 5 1 1 1 1
+Using 4 bowls, 0 cats, and 16 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 64%
+Mean mouse waiting time: 2.567639 seconds
+Operation took 31.050798377 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy2
+Starting lock test...
+cleanitems: Destroying sems, locks, and cvs
+Lock test done.
+Operation took 1.717358880 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: uw1
+Starting uwlocktest1...
+value of test_value = 0 should be 0
+TEST SUCCEEDED
+cleanitems: Destroying sems and locks
+uwlocktest1 done.
+Operation took 23.340943840 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy3
+Starting CV test...
+32 threads should print out in reverse order 5 times.
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+cleanitems: Destroying sems, locks, and cvs
+CV test done
+Operation took 2.393352720 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 9%
+Mean cat waiting time: 0.1953 seconds
+Mean mouse waiting time: 0.202777 seconds
+Operation took 10.946296577 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 41%
+Mean cat waiting time: 2.466810 seconds
+Mean mouse waiting time: 2.466729 seconds
+Operation took 24.029984697 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 8 5 1 1 1 1
+Using 4 bowls, 8 cats, and 8 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 51%
+Mean cat waiting time: 5.253806 seconds
+Mean mouse waiting time: 4.802841 seconds
+Operation took 39.069034257 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 1 5 1 1 1 1
+Using 4 bowls, 8 cats, and 1 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 51%
+Mean cat waiting time: 1.815614 seconds
+Mean mouse waiting time: 2.214133 seconds
+Operation took 22.026814177 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 1 10 5 1 1 1 1
+Using 4 bowls, 1 cats, and 10 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 42%
+Mean cat waiting time: 4.224922 seconds
+Mean mouse waiting time: 3.742824 seconds
+Operation took 32.048188057 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 2 0 5 1 1 1 1
+Using 4 bowls, 2 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 23%
+Mean cat waiting time: 0.100577 seconds
+Operation took 10.898370829 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 4 5 1 1 1 1
+Using 4 bowls, 0 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 45%
+Mean mouse waiting time: 0.101995 seconds
+Operation took 10.948175377 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 0 5 1 1 1 1
+Using 4 bowls, 8 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 72%
+Mean cat waiting time: 0.580246 seconds
+Operation took 13.938551929 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 16 5 1 1 1 1
+Using 4 bowls, 0 cats, and 16 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 74%
+Mean mouse waiting time: 1.963514 seconds
+Operation took 27.016914777 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy2
+Starting lock test...
+cleanitems: Destroying sems, locks, and cvs
+Lock test done.
+Operation took 1.829103440 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: uw1
+Starting uwlocktest1...
+value of test_value = 0 should be 0
+TEST SUCCEEDED
+cleanitems: Destroying sems and locks
+uwlocktest1 done.
+Operation took 23.340060120 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #58)
+
+292k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy3
+Starting CV test...
+32 threads should print out in reverse order 5 times.
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+cleanitems: Destroying sems, locks, and cvs
+CV test done
+Operation took 2.420455160 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 8%
+Mean cat waiting time: 0.203229 seconds
+Mean mouse waiting time: 0.202720 seconds
+Operation took 11.972664473 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 40%
+Mean cat waiting time: 2.519333 seconds
+Mean mouse waiting time: 2.516668 seconds
+Operation took 25.034134897 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 8 5 1 1 1 1
+Using 4 bowls, 8 cats, and 8 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 60%
+Mean cat waiting time: 4.198718 seconds
+Mean mouse waiting time: 3.771664 seconds
+Operation took 33.036748297 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 1 5 1 1 1 1
+Using 4 bowls, 8 cats, and 1 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 41%
+Mean cat waiting time: 2.693957 seconds
+Mean mouse waiting time: 3.219429 seconds
+Operation took 27.047503977 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 1 10 5 1 1 1 1
+Using 4 bowls, 1 cats, and 10 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 51%
+Mean cat waiting time: 2.814304 seconds
+Mean mouse waiting time: 3.177341 seconds
+Operation took 27.009447737 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 2 0 5 1 1 1 1
+Using 4 bowls, 2 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 23%
+Mean cat waiting time: 0.100479 seconds
+Operation took 10.917946657 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 4 5 1 1 1 1
+Using 4 bowls, 0 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 35%
+Mean mouse waiting time: 0.302695 seconds
+Operation took 13.948050017 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 8 0 5 1 1 1 1
+Using 4 bowls, 8 cats, and 0 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 67%
+Mean cat waiting time: 0.530339 seconds
+Operation took 14.943840537 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 0 16 5 1 1 1 1
+Using 4 bowls, 0 cats, and 16 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 83%
+Mean mouse waiting time: 1.987580 seconds
+Operation took 23.985260545 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy2
+Starting lock test...
+cleanitems: Destroying sems, locks, and cvs
+Lock test done.
+Operation took 1.764051280 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: uw1
+Starting uwlocktest1...
+value of test_value = 0 should be 0
+TEST SUCCEEDED
+cleanitems: Destroying sems and locks
+uwlocktest1 done.
+Operation took 23.321605320 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sy3
+Starting CV test...
+32 threads should print out in reverse order 5 times.
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+cleanitems: Destroying sems, locks, and cvs
+CV test done
+Operation took 2.421751440 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 20 2 2 5 1 1 1 1
+Using 20 bowls, 2 cats, and 2 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1
+Bowl utilization: 8%
+Mean cat waiting time: 0.204577 seconds
+Mean mouse waiting time: 0.404855 seconds
+Operation took 11.950014417 seconds
+OS/161 kernel: q
+Shutting down.
+The system is halted.
+
+OS/161 base system version 1.99.05
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
+   President and Fellows of Harvard College.  All rights reserved.
+
+Dan Reynolds' system version 0 (ASST1 #59)
+
+288k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS r3000
+OS/161 kernel: sp2 4 4 4 5 1 1 1 1
+Using 4 bowls, 4 cats, and 4 mice. Looping 5 times.
+Using cat eating time 1, cat sleeping time 1
+Using mouse eating time 1, mouse sleeping time 1

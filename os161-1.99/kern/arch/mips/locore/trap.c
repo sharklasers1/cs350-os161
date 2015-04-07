@@ -394,6 +394,9 @@ mips_usermode(struct trapframe *tf)
 	 * either another thread's stack or in the kernel heap.
 	 * (Exercise: why?)
 	 */
+
+	 // Because a user thread cannot access Kernel Heap Memory! Don't use a pointer, need to make
+	 // a trapframe on the current thread's own stack.
 	KASSERT(SAME_STACK(cpustacks[curcpu->c_number]-1, (vaddr_t)tf));
 
 	/*

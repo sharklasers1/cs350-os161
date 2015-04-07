@@ -47,15 +47,40 @@ struct vnode;
  * You write this.
  */
 
+// smartvm replacement addrspace
+//=======================================
+
 struct addrspace {
-  vaddr_t as_vbase1;
-  paddr_t as_pbase1;
-  size_t as_npages1;
-  vaddr_t as_vbase2;
-  paddr_t as_pbase2;
-  size_t as_npages2;
-  paddr_t as_stackpbase;
+  struct pagetable* textSegTable;
+  struct pagetable* dataSegTable;
+  struct pagetable* stackSegTable;
+  size_t as_loaded;
 };
+
+struct pte {
+  paddr_t pte_pfn;                  // PFN the VPN is mapped to
+};
+
+struct pagetable {
+  vaddr_t pt_vbase;                  // Base virtual address of the pagetable
+  size_t  pt_len;                    // Number of entries in the page table
+  struct pte* pt_entries;            // All the page table entries
+};
+
+
+
+// struct addrspace {
+//   vaddr_t as_vbase1;
+//   paddr_t as_pbase1;
+//   size_t as_npages1;
+//   vaddr_t as_vbase2;
+//   paddr_t as_pbase2;
+//   size_t as_npages2;
+//   paddr_t as_stackpbase;
+//   size_t as_loaded;
+// };
+
+//=======================================
 
 /*
  * Functions in addrspace.c:
@@ -107,7 +132,6 @@ int               as_define_region(struct addrspace *as,
 int               as_prepare_load(struct addrspace *as);
 int               as_complete_load(struct addrspace *as);
 int               as_define_stack(struct addrspace *as, vaddr_t *initstackptr);
-
 
 /*
  * Functions in loadelf.c

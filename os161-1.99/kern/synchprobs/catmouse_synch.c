@@ -16,11 +16,47 @@
  * declare other global variables if your solution requires them.
  */
 
-/*
- * replace this with declarations of any synchronization and other variables you need here
- */
-static struct semaphore *globalCatMouseSem;
+// ========================================
+// Locks
+// ========================================
 
+ static struct lock *generalLock;
+
+// ========================================
+// Condition Variables
+// ========================================
+
+// Handles occupation of bowls
+ static struct cv **occupiedBowlsCV;
+ static struct cv *mouseCV;
+ static struct cv *catCV;
+
+// ========================================
+// Global Variables
+// ========================================
+
+// Keeps track of number of cats currently fetching food from bowls.
+ volatile int cats;
+
+// Keeps track of number of mice currently fetching food from bowls.
+ volatile int mice;
+
+// Keeps track of the number of cats/mice that MUST
+// go when it becomes the cats/mice's turn.
+ volatile int catOnTurn;
+ volatile int mouseOnTurn;
+
+// Keeps track of the cats/mice that MUST go not on their current turn,
+// but on the cats/mice's NEXT turn.
+ volatile int catOnNextTurn;
+ volatile int mouseOnNextTurn;
+
+// The current animal that has access to the bowls
+// 1 = cats, 0 = neither, -1 = mice
+ volatile int entry;
+
+// Keeps track of which bowls are occupied
+ volatile int *occupiedBowls;
 
 /* 
  * The CatMouse simulation will call this function once before any cat or
@@ -30,18 +66,53 @@ static struct semaphore *globalCatMouseSem;
  * 
  * parameters: the number of bowls
  */
-void
-catmouse_sync_init(int bowls)
-{
-  /* replace this default implementation with your own implementation of catmouse_sync_init */
+ void
+ catmouse_sync_init(int bowls)
+ {
+ 	generalLock = lock_create("MouseLock");
+ 	if (generalLock == NULL) {
+ 		panic("could not create global generalLock synchronization lock");
+ 	}
 
-  (void)bowls; /* keep the compiler from complaining about unused parameters */
-  globalCatMouseSem = sem_create("globalCatMouseSem",1);
-  if (globalCatMouseSem == NULL) {
-    panic("could not create global CatMouse synchronization semaphore");
-  }
-  return;
-}
+ 	occupiedBowlsCV = kmalloc(sizeof(struct cv) * bowls);
+ 	if (occupiedBowlsCV == NULL) {
+ 		panic("could not allocate space for bowls CV");
+ 	}
+
+ 	occupiedBowls = kmalloc(sizeof(int) * bowls);
+ 	if (occupiedBowls == NULL) {
+ 		panic("could not allocate space for bowls int");
+ 	}
+
+ 	mouseCV = cv_create("MouseCV");
+ 	if (mouseCV == NULL) {
+ 		panic("could not create mouse CV");
+ 	}
+
+ 	catCV = cv_create("catCV");
+ 	if (catCV == NULL) {
+ 		panic("could not create mouse CV");
+ 	}
+
+ 	for(int i = 0; i < bowls; i++) {
+ 		occupiedBowlsCV[i] = cv_create("OccupiedBowlCV");
+ 		occupiedBowls[i] = 0;
+
+ 		if (occupiedBowlsCV[i] == NULL) {
+ 			panic("could not create global bowl CV");
+ 		}
+ 	}
+
+ 	cats = 0;
+ 	mice = 0;
+ 	catOnTurn = 0;
+ 	mouseOnTurn = 0;
+ 	catOnNextTurn = 0;
+ 	mouseOnNextTurn = 0;
+ 	entry = 0;
+
+ 	return;
+ }
 
 /* 
  * The CatMouse simulation will call this function once after all cat
@@ -51,14 +122,27 @@ catmouse_sync_init(int bowls)
  *
  * parameters: the number of bowls
  */
-void
-catmouse_sync_cleanup(int bowls)
-{
-  /* replace this default implementation with your own implementation of catmouse_sync_cleanup */
-  (void)bowls; /* keep the compiler from complaining about unused parameters */
-  KASSERT(globalCatMouseSem != NULL);
-  sem_destroy(globalCatMouseSem);
-}
+ void
+ catmouse_sync_cleanup(int bowls)
+ {
+ 	KASSERT(generalLock != NULL);
+ 	lock_destroy(generalLock);
+
+ 	KASSERT(mouseCV != NULL);
+ 	cv_destroy(mouseCV);
+
+ 	KASSERT(catCV != NULL);
+ 	cv_destroy(catCV);
+
+ 	KASSERT(occupiedBowlsCV != NULL);
+ 	for (int i = 0; i < bowls; i++) {
+ 		KASSERT(occupiedBowlsCV[i] != NULL);
+ 		cv_destroy(occupiedBowlsCV[i]);
+ 	}
+
+ 	kfree((void *)occupiedBowls);
+ 	kfree(occupiedBowlsCV);
+ }
 
 
 /*
@@ -73,14 +157,57 @@ catmouse_sync_cleanup(int bowls)
  * return value: none
  */
 
-void
-cat_before_eating(unsigned int bowl) 
-{
-  /* replace this default implementation with your own implementation of cat_before_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  P(globalCatMouseSem);
-}
+ void
+ cat_before_eating(unsigned int bowl) 
+ {
+  // Decrement bowl for zero indexing
+ 	bowl = bowl - 1;
+
+ 	KASSERT(catCV != NULL);
+ 	KASSERT(generalLock != NULL);
+ 	KASSERT(occupiedBowlsCV != NULL);
+ 	KASSERT(occupiedBowlsCV[bowl] != NULL);
+
+ 	lock_acquire(generalLock);
+
+ 	if (entry == 0) {
+ 		// indicate that it is the cats' turn
+ 		entry = 1;
+ 	}
+ 	else if (entry == -1) {
+		// If it is the mice' turn and a cat wants in,
+		// add the cat to the list of cats going on their turn.
+ 		catOnTurn++;
+
+ 		cv_wait(catCV, generalLock);
+
+ 		catOnTurn--;
+ 	}
+ 	else if (mouseOnTurn != 0) {
+		// If it is currently your turn and the mice want in, add any
+		// additional cats to the list of cats going next time.
+ 		catOnNextTurn++;
+
+ 		cv_wait(catCV, generalLock);
+
+		// When the cat is awoken, it is now their next turn and they have
+		// been moved from catOnNextTurn to catOnTurn as one of the current cats to go
+ 		catOnTurn--;
+ 	}
+
+
+  	// The cat is in the process of getting the bowl
+ 	cats++;
+ 	while (occupiedBowls[bowl] == 1) {
+
+ 		cv_wait(occupiedBowlsCV[bowl], generalLock);
+
+ 	}
+ 	occupiedBowls[bowl] = 1;
+
+ 	lock_release(generalLock);
+
+ }
 
 /*
  * The CatMouse simulation will call this function each time a cat finishes
@@ -95,14 +222,42 @@ cat_before_eating(unsigned int bowl)
  * return value: none
  */
 
-void
-cat_after_eating(unsigned int bowl) 
-{
-  /* replace this default implementation with your own implementation of cat_after_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  V(globalCatMouseSem);
-}
+ void
+ cat_after_eating(unsigned int bowl) 
+ {
+  // Decrement bowl for zero indexing
+ 	bowl = bowl - 1;
+
+ 	KASSERT(occupiedBowlsCV != NULL);
+ 	KASSERT(occupiedBowlsCV[bowl] != NULL);
+ 	KASSERT(mouseCV != NULL);
+ 	KASSERT(generalLock != NULL);
+
+ 	lock_acquire(generalLock);
+
+  	// The cat has now concluded his business at the bowl.
+ 	cats--;
+ 	occupiedBowls[bowl] = 0;
+ 	cv_signal(occupiedBowlsCV[bowl], generalLock);
+
+  	// If there are no cats eating, and no more cats are scheduled
+  	// to eat this turn, then end the turn
+ 	if (catOnTurn == 0 && cats == 0) {
+	// If when you end the turn, mice are waiting, make it the mice's turn
+ 		if (mouseOnTurn != 0) {
+ 			entry = -1;
+ 			catOnTurn = catOnNextTurn;
+ 			catOnNextTurn = 0;	
+ 			cv_broadcast(mouseCV, generalLock);
+ 		}
+		// Otherwise it is whoever goes next that claims the turn
+ 		else {
+ 			entry = 0;
+ 		}
+ 	}
+
+ 	lock_release(generalLock);
+ }
 
 /*
  * The CatMouse simulation will call this function each time a mouse wants
@@ -116,14 +271,57 @@ cat_after_eating(unsigned int bowl)
  * return value: none
  */
 
-void
-mouse_before_eating(unsigned int bowl) 
-{
-  /* replace this default implementation with your own implementation of mouse_before_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  P(globalCatMouseSem);
-}
+ void
+ mouse_before_eating(unsigned int bowl) 
+ {
+  // Decrement bowl for zero indexing
+ 	bowl = bowl - 1;
+
+ 	KASSERT(generalLock != NULL);
+ 	KASSERT(mouseCV != NULL);
+ 	KASSERT(occupiedBowlsCV != NULL);
+ 	KASSERT(occupiedBowlsCV[bowl] != NULL);
+
+ 	lock_acquire(generalLock);
+
+ 	if (entry == 0) {
+ 		// indicate that it is the mice' turn.
+ 		entry = -1;
+ 	}
+ 	else if (entry == 1) {
+		// If it is the cats' turn and a mouse wants in,
+		// add the mouse to the list of mice going on their turn.
+ 		mouseOnTurn++;
+
+ 		cv_wait(mouseCV, generalLock);
+
+ 		mouseOnTurn--;
+ 	}
+ 	else if (catOnTurn != 0) {
+		// If it is currently your turn and the cats want in, add any
+		// additional mice to the list of mice going next time.
+ 		mouseOnNextTurn++;
+
+ 		cv_wait(mouseCV, generalLock);
+
+		// When the mouse is awoken, it is now their next turn and they have
+		// been moved from mouseOnNextTurn to mouseOnTurn as one of the current mice to go
+ 		mouseOnTurn--;
+ 	}
+
+
+  	// The mouse is in the process of getting the bowl
+ 	mice++;
+ 	while (occupiedBowls[bowl] == 1) {
+
+ 		cv_wait(occupiedBowlsCV[bowl], generalLock);
+
+ 	}
+ 	occupiedBowls[bowl] = 1;
+
+ 	lock_release(generalLock);
+
+ }
 
 /*
  * The CatMouse simulation will call this function each time a mouse finishes
@@ -138,11 +336,39 @@ mouse_before_eating(unsigned int bowl)
  * return value: none
  */
 
-void
-mouse_after_eating(unsigned int bowl) 
-{
-  /* replace this default implementation with your own implementation of mouse_after_eating */
-  (void)bowl;  /* keep the compiler from complaining about an unused parameter */
-  KASSERT(globalCatMouseSem != NULL);
-  V(globalCatMouseSem);
-}
+ void
+ mouse_after_eating(unsigned int bowl) 
+ {
+    // Decrement bowl for zero indexing
+ 	bowl = bowl - 1;
+
+ 	KASSERT(occupiedBowlsCV != NULL);
+ 	KASSERT(occupiedBowlsCV[bowl] != NULL);
+ 	KASSERT(mouseCV != NULL);
+ 	KASSERT(generalLock != NULL);
+ 	
+ 	lock_acquire(generalLock);
+
+  	// The cat has now concluded his business at the bowl.
+ 	mice--;
+ 	occupiedBowls[bowl] = 0;
+ 	cv_signal(occupiedBowlsCV[bowl], generalLock);
+
+  	// If there are no cats eating, and no more cats are scheduled
+  	// to eat this turn, then end the turn
+ 	if (mouseOnTurn == 0 && mice == 0) {
+	// If there are cats waiting, make it the cats' turn
+ 		if (catOnTurn != 0) {
+ 			entry = 1;
+ 			mouseOnTurn = mouseOnNextTurn;
+ 			mouseOnNextTurn = 0;
+ 			cv_broadcast(catCV, generalLock);
+ 		}
+		// Otherwise whoever goes next gets the turn
+ 		else {
+ 			entry = 0;
+ 		}
+ 	}
+
+ 	lock_release(generalLock);
+ }
